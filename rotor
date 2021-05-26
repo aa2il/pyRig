@@ -1,0 +1,118 @@
+#! /bin/tcsh
+############################################################################
+
+# Rotor - J.B.Attili - 2020
+
+# Script to start rotor contol.
+
+############################################################################
+
+# Important rotctl(d) commands:
+#   p & P          - Get & set position
+#   M [2 4 8 16] 1 - Move Up Down Left or Right
+#   S              - Stop
+#   w cmd          - send direct command - see below
+
+# Summary of GS-232 Commands - w cmd - there are others, not sure if they implemented
+#   O & O2 (oh) - Az and el offset cal
+#   F & F2      - Az and el full-scale cal
+#   R U L & D   - Right Up left and Down
+#   A E         - Stop az and el rotation
+#   S           - Stop current command
+#   C B & C2    - Return az, el & az/el position
+#   P36         - 360-deg mode - az runs from 180-270-0-90-179
+#   P45         - 450-deg mode - az runs from 180-270-0-90-269
+
+# Cal sequence from command line:
+# w P36            - 360-deg mode
+# P 180 0          - Move rotor to Left and Down
+# w O              - Az offset "Oh"
+# w Y
+# w O2             - El offset "oh 2"
+# w Y
+
+# P 175 180          - Move rotor to Right and Up
+# w F                - Az fullscale
+# w Y
+# w F2               - El Fullscale
+# w Y
+
+# P 0 90            - Check by putting it in center - if not correct, probably a P36 vs P45 problem
+
+# Notes on Arduino interface:
+#    - Analog inputs on Arduino are 10-bit, max voltage = 5V
+#      Rotor must be providing a little over 5V at far ends.
+#      Added voltage divider to bring range down & seems to work just fine now.
+#    - There is some confusion/problem between P36 and P45 - need to work on this - change so comes up in P360
+#      P450 still only rotates 360-deg - Is this a limitation of this particular rotor?  Read docs!
+
+# Notes on gpredict:
+#    - The following settings for the rotor interface seem to work
+#      Edit->Preferences->Interfaces->Rotators
+#         Port:         4533                Default - need to make sure no conflict with SDR if we go that route
+#         Az Type:      0-180-360           The other option doesn't seem to work
+#         Min & Max Az: 0 & 360             Default
+#         Min & Max El: 0 & 180             
+#         Az End Stop:  180                 ****** This seems to be critical !!! ******
+
+# To Do:
+#    - Create a Python GUI that will talk to rotor through the daemon so we can override everythin?
+#      Perhaps gpredict is good enough but would be nice to send command (e.g. call) direct?
+
+###############################################################################
+
+# User params
+set BAUD      = 9600                       # Can go up to 38400 with arduino, must match what is programmed in
+set MODEL     = 603                        # Yaesu GS-232B
+set PORT      = 4533
+set TEST_MODE = 0
+
+set HAMLIB_DIR   = "/usr/bin"                 # V3.3 - works just fine
+set HAMLIB_DIR   = "~/hamlib-4/tests"         # Most recent development version
+
+###############################################################################
+
+pkill rotctl
+pkill rotctld
+
+#set CMD="rotctl"
+set CMD="rotctld"
+
+# Locate arduino device
+echo " "
+set DEVICE=`ls /dev/ttyACM*`
+echo -$DEVICE-
+# Need to test for no match here
+
+#set OPTS="-m $MODEL -r ${DEVICE}:${PORT} -s $BAUD"
+set OPTS="-m $MODEL -r ${DEVICE} -s $BAUD"
+
+# The dummy backend seems to be quiet useful for testing
+if( "$DEVICE" == "" )then
+    set OPTS=""
+endif
+
+set OPTS="-vvv $OPTS"
+#set OPTS="-vvvvv $OPTS"
+
+# Test it manually
+if( $TEST_MODE )then
+    echo $HAMLIB_DIR/rotctl $OPTS
+    $HAMLIB_DIR/rotctl $OPTS
+    exit
+endif
+
+# Execute the command
+echo $CMD $OPTS
+pkill $CMD
+$HAMLIB_DIR/$CMD $OPTS &
+
+# To test it:   Note - rotctl doesn't go through rotctld!!!!!
+# echo "p" | nc -w 1 localhost 4533
+#exit    
+
+# Start rig/rotor control gui
+cd ~/Python/pyRig
+pyRig.py -rotor HAMLIB &
+
+
