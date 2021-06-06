@@ -25,6 +25,7 @@ from rig_control import *
 from rotor_control import *
 from keypad import *
 from watchdog import *
+from settings import *
 
 ################################################################################
 
@@ -52,6 +53,26 @@ class PARAMS:
         self.ROTOR_CONNECTION = args.rotor
         self.PORT2            = args.port2
         self.PANADAPTOR       = False
+
+        # Read config file
+        self.RCFILE=os.path.expanduser("~/.pyRigrc")
+        self.SETTINGS=None
+        try:
+            with open(self.RCFILE) as json_data_file:
+                self.SETTINGS = json.load(json_data_file)
+        except:
+            print(self.RCFILE,' not found - need call!\n')
+            s=SETTINGS(None,self)
+            while not self.SETTINGS:
+                try:
+                    s.win.update()
+                except:
+                    pass
+                time.sleep(.01)
+            print('Settings:',self.SETTINGS)
+
+        #sys,exit(0)
+
         
 ################################################################################
 

@@ -32,6 +32,28 @@ class KEY_PAD():
         
         print("\nProgramming keypad ...")
 
+        # CW keyer messages for various contests
+        MY_CALL     = self.P.SETTINGS['MY_CALL']
+        MY_NAME     = self.P.SETTINGS['MY_NAME']
+        MY_STATE    = self.P.SETTINGS['MY_STATE']
+        MY_SEC      = self.P.SETTINGS['MY_SEC']
+        MY_CAT      = self.P.SETTINGS['MY_CAT']
+        MY_CQ_ZONE  = self.P.SETTINGS['MY_CQ_ZONE']
+        MY_ITU_ZONE = self.P.SETTINGS['MY_ITU_ZONE']
+        MY_GRID     = self.P.SETTINGS['MY_GRID']
+        
+        self.KEYER_MSGS = OrderedDict()
+        self.KEYER_MSGS["Defaults"]  = [MY_CALL,'TU 5NN '+MY_STATE,'OP '+MY_NAME,'73','BK','0001']
+        self.KEYER_MSGS["ARRL DX"]   = [MY_CALL,'TU 5NN '+MY_STATE,MY_STATE+' '+MY_STATE,'73','AGN?','0001']
+        self.KEYER_MSGS["NAQP"]      = [MY_CALL,'TU '+MY_NAME+' '+MY_STATE,MY_NAME+' '+MY_NAME,MY_STATE+' '+MY_STATE,'AGN?','0001']
+        self.KEYER_MSGS["IARU"]      = [MY_CALL,'TU 5NN '+MY_ITU_ZONE,'T6 T6','73','AGN?','0001']
+        self.KEYER_MSGS["CQ WW"]     = [MY_CALL,'TU 5NN '+MY_CQ_ZONE,'T3 T3','73','AGN?','GL']
+        self.KEYER_MSGS["CQ WPX"]    = [MY_CALL,'TU 5NN 1','001 001','73','AGN?','0001']
+        self.KEYER_MSGS["ARRL VHF"]  = [MY_CALL,'TU '+MY_GRID,MY_GRID+' '+MY_GRID,'73','AGN?','0001']
+        self.KEYER_MSGS["ARRL 160m"] = [MY_CALL,'TU 5NN '+MY_SEC,MY_SEC+' '+MY_SEC,'73','AGN?','0001']
+        self.KEYER_MSGS["Field Day"] = [MY_CALL,'TU '+MY_CAT+' '+MY_SEC,MY_CAT+' '+MY_CAT,MY_SEC+' '+MY_SEC,'AGN?','0001']
+        #self.KEYER_MSGS["Test"]      = ['TEST1','2','3','4','5','0001']
+
         # Let's see what's in the keypad
         self.Keyer = self.GetKeyerMemory()
         print( self.Keyer )
@@ -54,7 +76,7 @@ class KEY_PAD():
         row=6
         col=0
         self.btns=[]
-        for b in KEYER_MSGS.keys():
+        for b in self.KEYER_MSGS.keys():
             print(b)
             btn = QPushButton(b)
             #btn.clicked.connect(lambda: self.KeyerMemoryDefaults(b) )
@@ -74,9 +96,9 @@ class KEY_PAD():
 
     def KeyerMemoryDefaults(self,arg):
         print("\nSetting Keypad Defaults ",arg)
-        #print('Keyer Msgs:',KEYER_MSGS)
-        #print(KEYER_MSGS[arg])
-        self.Keyer = KEYER_MSGS[arg]
+        #print('Keyer Msgs:',self.KEYER_MSGS)
+        #print(self.KEYER_MSGS[arg])
+        self.Keyer = self.KEYER_MSGS[arg]
 
         for i in range(6):
             self.entry[i].setText(self.Keyer[i])
