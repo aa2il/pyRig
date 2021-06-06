@@ -1,11 +1,11 @@
-#########################################################################################
+############################################################################
 #
-# settings.py - Rev. 1.0
+# settings.py - Rev 1.0
 # Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Gui for basic settings.
 #
-############################################################################################
+############################################################################
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-#########################################################################################
+############################################################################
 
 import sys
 import json
