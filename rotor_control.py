@@ -185,6 +185,7 @@ class ROTOR_CONTROL():
     def newGridSquare(self):
         txt=self.grid_sq.text().upper()
         print('newGridSquare:',txt)
+        MY_GRID = self.P.SETTINGS['MY_GRID']
         if bearing_ok:
             try:
                 bearing = calculate_heading(MY_GRID,txt)

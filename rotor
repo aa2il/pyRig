@@ -36,7 +36,7 @@
 #   P36         - 360-deg mode - az runs from 180-270-0-90-179
 #   P45         - 450-deg mode - az runs from 180-270-0-90-269
 
-# Cal sequence from command line:
+# Cal sequence from command line - Set TEST_MODE=1 to bring up console
 # w P36            - 360-deg mode
 # P 180 0          - Move rotor to Left and Down
 # w O              - Az offset "Oh"
@@ -80,8 +80,9 @@ set MODEL     = 603                        # Yaesu GS-232B
 set PORT      = 4533
 set TEST_MODE = 0
 
-set HAMLIB_DIR   = "/usr/bin"                 # V3.3 - works just fine
-set HAMLIB_DIR   = "~/hamlib-4/tests"         # Most recent development version
+#set HAMLIB_DIR   = "/usr/bin"                 # V3.3 - works just fine
+#set HAMLIB_DIR   = "/usr/local/bin"           # V4.1 on RPi
+set HAMLIB_DIR   = "~/hamlib-4/tests"         # Most recent stable version
 
 ###############################################################################
 
@@ -93,9 +94,21 @@ set CMD="rotctld"
 
 # Locate arduino device
 echo " "
-set DEVICE=`ls /dev/ttyACM*`
-echo -$DEVICE-
-# Need to test for no match here
+#set DEVICE=`ls /dev/ttyACM*`
+set a=`ls -al /dev/serial/by-id/*arduino*`
+echo a=-$a-
+set b=`echo $a | cut -f 2 -d '>'`
+echo b=-$b-
+set c=`echo $b | cut -f 3 -d '/'`
+echo c=-$c-
+set DEVICE="/dev/${c}"
+echo DEVICE=-$DEVICE-$#DEVICE
+
+if( $#DEVICE == 0 )then
+    echo ----------- No Rotor Interfce (Arduino Device) found -------------
+    exit
+endif
+#exit
 
 #set OPTS="-m $MODEL -r ${DEVICE}:${PORT} -s $BAUD"
 set OPTS="-m $MODEL -r ${DEVICE} -s $BAUD"

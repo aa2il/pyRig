@@ -83,19 +83,25 @@ class WatchDog:
         if sock.mode!=m:
             gui.setRigMode(-1)
 
-        # Check filters
-        if self.P.sock.rig_type2=='FT991a' and False:
+        # Check filters - This was False/True
+        if self.P.sock.rig_type2=='FT991a' and True:
             filt1=gui.filt1.currentText()
             if self.VERBOSITY>=2:
                 print('Filts:',filt1,sock.filt)
             if [filt1]!=sock.filt:
-                gui.setRigFilter(-1)
-        if sock.rig_type=='Kenwood' or True:
+                try:
+                    gui.setRigFilter(-1)
+                except:
+                    pass
+        if sock.rig_type=='Kenwood' or False:
             filt1=gui.filt1.currentText()
             filt2=gui.filt2.currentText()
             #print('Filts:',[filt1,filt2],self.sock.filt)
             if [filt1,filt2]!=sock.filt:
-                gui.setRigFilter(-1)
+                try:
+                    gui.setRigFilter(-1)
+                except:
+                    pass
                 
         # Read S-meter - From newcat.c in hamlib4 for the ft991:
         # value of 0.448 determined by data from W6HN - seems to be pretty linear
