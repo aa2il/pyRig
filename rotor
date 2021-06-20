@@ -36,7 +36,10 @@
 #   P36         - 360-deg mode - az runs from 180-270-0-90-179
 #   P45         - 450-deg mode - az runs from 180-270-0-90-269
 
-# Cal sequence from command line - Set TEST_MODE=1 to bring up console
+# Cal sequence from command line
+# -- Set TEST_MODE=1 below and run this code to bring up console
+# -- Ignore any read timeouts - this is a bug in hamlib & I need to fix
+# -- If the 6m beam is on top it may not be possble to this adequately
 # w P36            - 360-deg mode
 # P 180 0          - Move rotor to Left and Down
 # w O              - Az offset "Oh"
