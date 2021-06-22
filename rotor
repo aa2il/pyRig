@@ -85,7 +85,7 @@ set TEST_MODE = 0
 
 #set HAMLIB_DIR   = "/usr/bin"                 # V3.3 - works just fine
 #set HAMLIB_DIR   = "/usr/local/bin"           # V4.1 on RPi
-set HAMLIB_DIR   = "~/hamlib-4/tests"         # Most recent stable version
+set HAMLIB_DIR   = "~/hamlib-4.2/tests"         # Most recent stable version
 
 ###############################################################################
 
@@ -104,12 +104,17 @@ set b=`echo $a | cut -f 2 -d '>'`
 echo b=-$b-
 set c=`echo $b | cut -f 3 -d '/'`
 echo c=-$c-
-set DEVICE="/dev/${c}"
-echo DEVICE=-$DEVICE-$#DEVICE
 
-if( $#DEVICE == 0 )then
-    echo ----------- No Rotor Interfce (Arduino Device) found -------------
+if( "$#c" == "0" )then
+    echo "\n----------- No Rotor Interfce (Arduino Device) found -------------"
     exit
+    
+    echo "Using Dummy Device instead (useful for development)"
+    set MODEL=1
+    set DEVICE="/dev/null"
+else
+    set DEVICE="/dev/${c}"
+    echo DEVICE="-$DEVICE-     $#DEVICE      $#c"
 endif
 #exit
 
