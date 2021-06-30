@@ -38,6 +38,9 @@ class RIG_COMMON():
     def __init__(self,parent,P):
         self.P=P
 
+        if True:
+            print('RIG_COMMN INIT:',P.sock.rig_type,P.sock.rig_type1,P.sock.rig_type2)
+
         self.tab1 = QWidget()
         parent.addTab(self.tab1,"Common")
         
@@ -89,13 +92,13 @@ class RIG_COMMON():
             self.grid.addWidget(self.split,row,col)
             self.split.setCheckable( True )
 
-            splt = self.P.sock.split_mode(-1)
-            if splt:
-                print('Split is on')
-                self.split.setChecked( True )
-            else:
-                print('Split is off')
-                self.split.setChecked( False )
+            split = self.P.sock.split_mode(-1)
+            self.split.setChecked( split )
+            print('Split is ',split,self.P.sock.rig_type)
+            if split and self.P.sock.rig_type=='Hamlib':
+                # For some reason, Hamlib needs this for things to work properly
+                split = self.P.sock.split_mode(1)
+            
         
         # Add Mode selector
         row+=1
@@ -265,7 +268,7 @@ class RIG_COMMON():
             
             m=self.P.sock.mode
             wide=self.P.sock.filt[0]
-            if m=='RTTY' or m=='PKTUSB':
+            if m=='RTTY' or m=='PKTUSB' or m=='DATA-U':
                 if wide=='Wide':
                     filts=FT991A_DATA_FILTERS2
                 else:
@@ -378,7 +381,7 @@ class RIG_COMMON():
         print('setRigBand: %d %s' % (idx,self.bands[idx]))
         if idx==-1:
             # Set combo box from rig mode
-            print(self.P.sock.band)
+            print('band=',self.P.sock.band)
             idx=self.bands.index(self.P.sock.band)
             self.band.setCurrentIndex(idx)
         else:
@@ -388,16 +391,38 @@ class RIG_COMMON():
 
     # Function to update rig mode
     def setRigMode(self,idx):
-        print('setRigMode: %d %s' % (idx,self.modes[idx]))
+        print('\n--------- setRigMode: %d %s' % (idx,self.modes[idx]))
         if idx==-1:
             # Set combo box from rig mode
-            #print(self.P.sock.mode)
-            idx=self.modes.index(self.P.sock.mode)
+            mode=self.P.sock.mode
+            if mode=='CW-U' or mode=='CW-L' or mode=='CW-R':
+                mode='CW'
+            elif mode=='DATA-U':
+                mode='PKTUSB'
+            idx=self.modes.index(mode)
             self.mode.setCurrentIndex(idx)
         else:
             # Set rig from combo box selection
             if self.P.sock.mode!=self.modes[idx]:
-                self.P.sock.set_mode(self.modes[idx])
+                mode1=self.modes[idx]
+                self.P.sock.set_mode(mode1)
+
+                # Check Split & set VFO B if necessary
+                # Assume inverting transponder for now, fix this later
+                splt = self.P.sock.split_mode(-1)
+                if splt:
+                    if mode1=='CW':
+                        mode2='CW-LSB'
+                    elif mode1=='USB':
+                        mode2='LSB'
+                    elif mode1=='LSB':
+                        mode2='USB'
+                    else:
+                        mode2=mode1
+                    print('setRigMode: Split is on',mode1,mode2,'\n')
+                    self.P.sock.set_mode(mode2,VFO='B')
+                    
+                
 
     # Function to update rig filters
     def setRigFilter(self,ifilt,idx=0):
@@ -414,10 +439,13 @@ class RIG_COMMON():
                 self.filt1.setCurrentIndex(idx1)
             
             if self.P.sock.filt[1]!=None:
-                idx2=self.filters2.index(self.P.sock.filt[1])
-                print('idx2=',idx2)
-                self.filt2.setCurrentIndex(idx2)
-            
+                try:
+                    idx2=self.filters2.index(self.P.sock.filt[1])
+                    print('idx2=',idx2)
+                    self.filt2.setCurrentIndex(idx2)
+                except:
+                    print('RIG_COMMON: setRigFilter - failure')
+                    
         else:
             # Set rig from combo box selection
             if ifilt==1:
@@ -453,3 +481,144 @@ class RIG_COMMON():
         self.P.sock.set_power(p)
         self.pwr_txt.setText( "{0:,d} W".format(p) )
 
+################################################################################
+
+class RIG_VFOS():
+    def __init__(self,parent,P):
+        self.P=P
+        #self.sock=P.sock
+
+        self.tab1 = QWidget()
+        parent.addTab(self.tab1,"VFO Control")
+        
+        self.grid = QGridLayout()
+        self.tab1.setLayout(self.grid)
+
+        self.MODE_LIST = ['FM','USB','LSB','CW','CW-R','PKTUSB','PKTLSB','AM']
+     
+        # Add VFO A control
+        row=0
+        col=0
+        lb=QLabel("VFO A:")
+        self.grid.addWidget(lb,row,col)
+        self.vfoA = QComboBox()
+        self.vfoA.addItems(self.MODE_LIST)
+        self.grid.addWidget(self.vfoA,row,col+1)
+        self.vfoA.currentIndexChanged.connect( functools.partial(self.set_vfo_mode,'A',1) )
+        self.set_vfo_mode('A',-1)
+
+        # Add VFO B control
+        row+=1
+        lb=QLabel("VFO B:")
+        self.grid.addWidget(lb,row,col)
+        self.vfoB = QComboBox()
+        self.vfoB.addItems(self.MODE_LIST)
+        self.grid.addWidget(self.vfoB,row,col+1)
+        self.vfoB.currentIndexChanged.connect( functools.partial(self.set_vfo_mode,'B',1) )
+        self.set_vfo_mode('B',-1)
+
+        # Satellites
+        row+=2
+        lb=QLabel('Satellites:')
+        self.grid.addWidget(lb,row,col)
+        for mode in ['FM','USB-INV','USB','LSB-INV','LSB','CW','CW-INV','CW/USB', \
+                     'PKT-INV','PKT-USB','PKT-FM']:
+
+            # Align buttons according to voice, CW and packet modes
+            if mode=='FM' or mode=='CW' or mode=='PKT-INV':
+                row+=1
+                col=0
+            else:
+                col+=1
+                
+            btn = QPushButton(mode) 
+            self.grid.addWidget(btn,row,col)
+            btn.clicked.connect( functools.partial(self.SetSatMode,mode) )
+
+            
+    # Callback for VFO Mode list spinner
+    def set_vfo_mode(self,vfo,iopt,mode=None):
+
+        print('\nRIG_VFOS: SET_VFO_MODE Spinner callback:',vfo,iopt,mode)
+        
+        if iopt==-1 or mode==None:
+            
+            # Set spin box according to rig
+            mode = self.P.sock.get_mode(VFO=vfo)
+            if mode=='DATA-U':
+                mode='PKTUSB'
+            idx=self.MODE_LIST.index(mode)
+            if vfo=='A':
+                self.vfoA.setCurrentIndex(idx)
+            else:
+                self.vfoB.setCurrentIndex(idx)
+
+        else:
+
+            # Set radio according to specified mode
+            split = self.P.sock.split_mode(-1)
+            if isinstance(mode, int):
+                mode=self.MODE_LIST[mode]
+            print('SET_VFO_MODE: Setting radio vfo ...',vfo,iopt,mode,'\tsplit=',split)
+            if vfo in 'AM' or split:
+                self.P.sock.set_mode(mode,VFO=vfo)
+
+             
+    def SetSatMode(self,mode):
+
+        # Init
+        print("\nRIG_VFOS: Set Sat Mode ...",mode)
+
+        # Split mode
+        self.P.sock.split_mode(1)
+
+        mode1=mode
+        if mode=='FM':
+            #cmd='rigctl -m 2 -r localhost:4532 M FM 0 X FM 0'
+            mode2='FM'
+        elif mode=='USB-INV':
+            #cmd='rigctl -m 2 -r localhost:4532 M USB 0 X LSB 0'
+            mode1='USB'
+            mode2='LSB'
+        elif mode=='USB':
+            #cmd='rigctl -m 2 -r localhost:4532 M USB 0 X USB 0'
+            mode2='USB'
+        elif mode=='LSB':
+            #cmd='rigctl -m 2 -r localhost:4532 M LSB 0 X LSB 0'
+            mode2='LSB'
+        elif mode=='LSB-INV':
+            #cmd='rigctl -m 2 -r localhost:4532 M LSB 0 X USB 0'
+            mode1='LSB'
+            mode2='USB'
+        elif mode=='CW':
+            #cmd='rigctl -m 2 -r localhost:4532 M CW 0 X CW 0'
+            mode2='CW'
+        elif mode=='CW-INV':
+            #cmd='rigctl -m 2 -r localhost:4532 M CW 0 X CW 0'
+            mode1='CW'
+            mode2='CW-R'
+        elif mode=='CW/USB':
+            # Not sure what this all about?
+            #cmd='rigctl -m 2 -r localhost:4532 M USB 0 X CW 0'
+            mode1='USB'
+            mode2='CW'
+        elif mode=='PKT-INV':
+            #cmd='rigctl -m 2 -r localhost:4532 M PKTUSB 0 X PKTLSB 0'
+            mode1='PKTUSB'
+            mode2='PKTLSB'
+        elif mode=='PKT-USB':
+            #cmd='rigctl -m 2 -r localhost:4532 M PKTUSB 0 X PKTUSB 0'
+            mode1='PKTUSB'
+            mode2='PKTUSB'
+        elif mode=='PKT-FM':
+            cmd='rigctl -m 2 -r localhost:4532 M PKTFM 0 X PKTFM 0'
+            mode1='PKTFM'
+            mode2='PKTFM'
+        else:
+            print('SET SAT MODE: Unknwon mode',mode)
+            return
+
+        print('SET SAT MODE: ',mode1,mode2)
+        self.set_vfo_mode('A',1,mode1)
+        self.set_vfo_mode('B',1,mode2)
+   

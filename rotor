@@ -107,7 +107,7 @@ echo c=-$c-
 
 if( "$#c" == "0" )then
     echo "\n----------- No Rotor Interfce (Arduino Device) found -------------"
-    exit
+    #exit
     
     echo "Using Dummy Device instead (useful for development)"
     set MODEL=1

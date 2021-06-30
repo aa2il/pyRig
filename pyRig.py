@@ -1,10 +1,12 @@
-#! /usr/bin/python3
+#! /usr/bin/python3 -u
 ############################################################################
 #
 # pyRig.py - Rev 1.0
 # Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
 #
-# Gui for remote rig & rotor control
+# Gui for remote rig & rotor control.  This is rather primative right now.
+# Flrig is much better but I mainly want a rotor controller.  Need to spend
+# more time flushing out flrig.
 #
 ############################################################################
 #
@@ -122,6 +124,9 @@ class pyRIG_GUI(QMainWindow):
         # Tab to control rig in more detail
         self.rig_ctrl = RIG_CONTROL(self.tabs,P)
 
+        # Tab to control vfos in more detail
+        self.rig_vfos = RIG_VFOS(self.tabs,P)
+
         # Tab for the key pad
         if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
             self.key_pad = KEY_PAD(self.tabs,P)
@@ -145,6 +150,8 @@ if __name__ == '__main__':
     if not P.sock.active and P.sock.connection!='NONE':
         print('*** No connection available to rig ***')
         sys.exit(0)
+    else:
+        print('Opened socket to:',P.sock.rig_type,P.sock.rig_type1,P.sock.rig_type2)
 
     # Open connection to rotor
     P.sock2 = socket_io.open_rig_connection(P.ROTOR_CONNECTION,0,P.PORT2,0,'ROTOR')
