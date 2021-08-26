@@ -280,14 +280,14 @@ class RIG_CONTROL():
         
     # Function to read rig status and update control buttons accordingly
     def rig_status(self):
-        print('RIG_STATUS: band=',self.sock.band,self.sock.band=='MW')
-        if False:
-            self.band = str( self.sock.get_band() )+'m'
+        print('RIG_STATUS: band=',self.sock.band)
+
+        if self.sock.band=='MW':
+            self.band='160m'
+        elif self.sock.band=='AIR':
+            self.band='2m'
         else:
-            if self.sock.band=='MW':
-                self.band='160m'
-            else:
-                self.band = self.sock.band
+            self.band = self.sock.band
         if self.band:
             self.band_buttons[self.band].setChecked(True)
 

@@ -184,8 +184,8 @@ class ROTOR_CONTROL():
     # Function to point rotor toward a user specified grid square
     def newGridSquare(self):
         txt=self.grid_sq.text().upper()
-        print('newGridSquare:',txt)
         MY_GRID = self.P.SETTINGS['MY_GRID']
+        print('newGridSquare:',MY_GRID,'\t-->\t',txt)
         if bearing_ok:
             try:
                 bearing = calculate_heading(MY_GRID,txt)

@@ -69,26 +69,26 @@ class WatchDog:
             return
 
         # Check Split
-        splt = self.P.sock.split_mode(-1)
-        if splt:
-            gui.split.setChecked( True )
+        if gui.split:
+            splt = self.P.sock.split_mode(-1)
+            if splt:
+                gui.split.setChecked( True )
 
-            # Need to check freq & mode of VFO-B if in split mode
-            # Reading freq hasn't been implemented yet so skip it for now
-            #try:
-            #print('Split is on ...')
-            #frq  = P.sock.get_freq(VFO='B')
-            #print('Split is on frq=',frq)
-            #frqB  = .001*frq
-            modeB = P.sock.get_mode(VFO='B')
-            #print('Split is on',frqB,modeB)
-            print('Split is on - mode B=',modeB)
-            #except:
-            #    print('Split is on - Unknown error')
-        else:
-            print('Split is off')
-            gui.split.setChecked( False )
-
+                # Need to check freq & mode of VFO-B if in split mode
+                # Reading freq hasn't been implemented yet so skip it for now
+                #try:
+                #print('Split is on ...')
+                #frq  = P.sock.get_freq(VFO='B')
+                #print('Split is on frq=',frq)
+                #frqB  = .001*frq
+                modeB = P.sock.get_mode(VFO='B')
+                #print('Split is on',frqB,modeB)
+                print('Split is on - mode B=',modeB)
+                #except:
+                #    print('Split is on - Unknown error')
+            else:
+                print('Split is off')
+                gui.split.setChecked( False )
         
         # Check band
         if False:

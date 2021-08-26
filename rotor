@@ -147,6 +147,6 @@ $HAMLIB_DIR/$CMD $OPTS &
 
 # Start rig/rotor control gui
 cd ~/Python/pyRig
-pyRig.py -rotor HAMLIB &
+pyRig.py -rotor HAMLIB -port2 4533 &
 
 

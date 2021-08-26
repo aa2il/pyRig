@@ -82,6 +82,10 @@ class MyLCDNumber(QLCDNumber):
     def wheelEvent(self,event):
         #print("wheelEvent:",self.val,event.pos())
 
+        # If no callback is defined, don't allow user to adjust the digitis
+        if not self.wheelCB:
+            return
+
         # Determine which digit the mouse was over when the wheel was spun
         x = event.x()                    # Width of lcd widget
         ndig = self.digitCount()         # Includes spaces & dec point

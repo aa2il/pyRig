@@ -98,7 +98,9 @@ class RIG_COMMON():
             if split and self.P.sock.rig_type=='Hamlib':
                 # For some reason, Hamlib needs this for things to work properly
                 split = self.P.sock.split_mode(1)
-            
+        else:
+            self.split=None
+                
         
         # Add Mode selector
         row+=1
@@ -283,7 +285,7 @@ class RIG_COMMON():
                     filts=FT991A_CW_FILTERS2
                 else:
                     filts=FT991A_CW_FILTERS1
-            elif m=='AM':
+            elif m in ['AM','AMN']:
                 # idx=0
                 if wide=='Wide':
                     filts=FT991A_AM_FILTERS2
@@ -358,6 +360,8 @@ class RIG_COMMON():
         if b.isChecked():
             print( b.text()+" is checked" )
             m=self.P.sock.mode
+            if m=='AMN':
+                m='AM'
             if b.text()=='Front':
                 src=0
                 prt=0
@@ -395,10 +399,12 @@ class RIG_COMMON():
         if idx==-1:
             # Set combo box from rig mode
             mode=self.P.sock.mode
-            if mode=='CW-U' or mode=='CW-L' or mode=='CW-R':
+            if mode in ['CW-U','CW-L','CW-R','CWR']:
                 mode='CW'
             elif mode=='DATA-U':
                 mode='PKTUSB'
+            elif mode=='AMN':
+                mode='AM'
             idx=self.modes.index(mode)
             self.mode.setCurrentIndex(idx)
         else:

@@ -67,6 +67,9 @@ class PARAMS:
         self.PORT             = args.port
         self.ROTOR_CONNECTION = args.rotor
         self.PORT2            = args.port2
+        if self.ROTOR_CONNECTION=='HAMLIB' and self.PORT2==0:
+            self.PORT2        = 4533
+        
         self.PANADAPTOR       = False
 
         # Read config file
