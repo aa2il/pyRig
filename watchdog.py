@@ -178,7 +178,7 @@ class WatchDog:
                 watts = pow(10.,0.1*dbw)
                 #if watts<2:
                 #    watts=0
-            if self.VERBOSITY>=2 or True:
+            if self.VERBOSITY>=2:
                 print('power=',s,watts,dbw)
             gui.pwr.setValue(s)
             txt="{:.1f}W".format(watts)
@@ -208,15 +208,15 @@ class WatchDog:
         
         # Read COMP
         s=sock.read_meter('Comp')
-        print('comp=',s)
+        if self.VERBOSITY>=2:
+            print('comp=',s)
         gui.comp.setValue(s)
             
         # Read ALC - no markings so use S-meter markings.
         # We're worried about anything above S9 which is about 60 for alc
         s=sock.read_meter('ALC')
-        print('alc=',s)
         alc=s/60.
-        if self.VERBOSITY>=2 or True:
+        if self.VERBOSITY>=2:
             print('alc=',s,alc)
         gui.alc.setValue(s)
         txt="{:.1f}".format(alc)

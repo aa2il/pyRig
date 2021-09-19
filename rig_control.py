@@ -293,7 +293,7 @@ class RIG_CONTROL():
 
         self.mode = self.sock.get_mode()
         print('RIG_STATUS: mode=',self.mode)
-        if self.mode=='PKT-U' or self.mode=='PKTUSB' or self.mode=='DATA-U':
+        if self.mode in ['PSK-U','PKT-U','PKTUSB','DATA-U']:
             self.mode='RTTY'
         if self.mode=='CWR':
             self.mode='CW'

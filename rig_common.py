@@ -270,12 +270,12 @@ class RIG_COMMON():
             
             m=self.P.sock.mode
             wide=self.P.sock.filt[0]
-            if m=='RTTY' or m=='PKTUSB' or m=='DATA-U':
+            if m in ['PKTUSB','RTTY','PSK-U','DATA-U']:
                 if wide=='Wide':
                     filts=FT991A_DATA_FILTERS2
                 else:
                     filts=FT991A_DATA_FILTERS1
-            elif m=='USB' or m=='LSB':
+            elif m in ['USB','LSB']:
                 if wide=='Wide':
                     filts=FT991A_SSB_FILTERS2
                 else:
@@ -291,8 +291,7 @@ class RIG_COMMON():
                     filts=FT991A_AM_FILTERS2
                 else:
                     filts=FT991A_AM_FILTERS1
-            elif m=='FM':
-                # idx=0
+            elif m in ['FM','FMN']:
                 if wide=='Wide':
                     filts=FT991A_AM_FILTERS2
                 else:
@@ -401,10 +400,12 @@ class RIG_COMMON():
             mode=self.P.sock.mode
             if mode in ['CW-U','CW-L','CW-R','CWR']:
                 mode='CW'
-            elif mode=='DATA-U':
+            elif mode in ['RTTY','PSK-U','DATA-U']:
                 mode='PKTUSB'
             elif mode=='AMN':
                 mode='AM'
+            elif mode=='FMN':
+                mode='FM'
             idx=self.modes.index(mode)
             self.mode.setCurrentIndex(idx)
         else:
@@ -545,13 +546,13 @@ class RIG_VFOS():
     # Callback for VFO Mode list spinner
     def set_vfo_mode(self,vfo,iopt,mode=None):
 
-        print('\nRIG_VFOS: SET_VFO_MODE Spinner callback:',vfo,iopt,mode)
+        print('\nRIG_VFOS: SET_VFO_MODE Spinner callback - vfo=',vfo,'\topt=',iopt,'\tmode=',mode)
         
         if iopt==-1 or mode==None:
             
             # Set spin box according to rig
             mode = self.P.sock.get_mode(VFO=vfo)
-            if mode=='DATA-U':
+            if mode in ['RTTY','DATA-U','PSK-U']:
                 mode='PKTUSB'
             idx=self.MODE_LIST.index(mode)
             if vfo=='A':
@@ -565,8 +566,8 @@ class RIG_VFOS():
             split = self.P.sock.split_mode(-1)
             if isinstance(mode, int):
                 mode=self.MODE_LIST[mode]
-            print('SET_VFO_MODE: Setting radio vfo ...',vfo,iopt,mode,'\tsplit=',split)
-            if vfo in 'AM' or split:
+            print('SET_VFO_MODE: Setting radio vfo',vfo,'to',mode,'\tsplit=',split)
+            if vfo in 'AM' or split or True:
                 self.P.sock.set_mode(mode,VFO=vfo)
 
              
