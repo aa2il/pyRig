@@ -51,9 +51,9 @@ class PARAMS:
         # Process command line args
         # Can add required=True to anything that is required
         arg_proc = argparse.ArgumentParser()
-        arg_proc.add_argument("-rig", help="Rig connection Type",
-                      type=str,default="ANY",
-                      choices=['FLDIGI','FLRIG','DIRECT','HAMLIB','ANY','NONE'])
+        arg_proc.add_argument("-rig", help="Connection Type",
+                              type=str,default=["ANY"],nargs='+',
+                              choices=CONNECTIONS+['NONE']+RIGS)
         arg_proc.add_argument("-port", help="Rig connection Port",
                               type=int,default=0)
         arg_proc.add_argument("-rotor", help="Rotor connection Type",
@@ -63,7 +63,11 @@ class PARAMS:
                               type=int,default=0)
         args = arg_proc.parse_args()
 
-        self.RIG_CONNECTION   = args.rig
+        self.RIG_CONNECTION   = args.rig[0]
+        if len(args.rig)>=2:
+            self.RIG       = args.rig[1]
+        else:
+            self.RIG       = None
         self.PORT             = args.port
         self.ROTOR_CONNECTION = args.rotor
         self.PORT2            = args.port2
@@ -73,7 +77,8 @@ class PARAMS:
         self.PANADAPTOR       = False
 
         # Read config file
-        self.RCFILE=os.path.expanduser("~/.pyRigrc")
+        #self.RCFILE=os.path.expanduser("~/.pyRigrc")
+        self.RCFILE=os.path.expanduser("~/.keyerrc")
         self.SETTINGS=None
         try:
             with open(self.RCFILE) as json_data_file:
@@ -149,7 +154,7 @@ if __name__ == '__main__':
     pprint(vars(P))
 
     # Open connection to rig
-    P.sock = socket_io.open_rig_connection(P.RIG_CONNECTION,0,P.PORT,0,'RIG')
+    P.sock = socket_io.open_rig_connection(P.RIG_CONNECTION,0,P.PORT,0,'RIG',rig=P.RIG)
     if not P.sock.active and P.sock.connection!='NONE':
         print('*** No connection available to rig ***')
         sys.exit(0)

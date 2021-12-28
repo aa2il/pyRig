@@ -145,8 +145,8 @@ class WatchDog:
         # This is consistent with the accepted definition of S-units but 
         # seems to read a little low on the ft991a - go with it for now
         s=sock.read_meter('S')
-        print('s=',s)
-        db=s*114./255.-54.
+        print('s=',s,type(s))
+        db=float(s)*114./255.-54.
         if self.VERBOSITY>=2:
             print('S=',s,db)
         if db<=0:
