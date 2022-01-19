@@ -40,7 +40,7 @@ class WatchDog:
         self.timer.start(msec)
         self.count=0
         self.P = P
-        self.VERBOSITY=1
+        self.VERBOSITY=0
 
         self.Monitor()
 
@@ -49,8 +49,8 @@ class WatchDog:
         P=self.P
         sock=P.sock
         sock2=P.sock2
-        if self.VERBOSITY>0:
-            print('Watch Dog ...',end=' ')
+        if self.VERBOSITY>0 or True:
+            print('Watch Dog ...')    # ,end=' ')
 
         # Read radio status
         #if P.sock.connection!='NONE':
@@ -83,11 +83,13 @@ class WatchDog:
                 #frqB  = .001*frq
                 modeB = P.sock.get_mode(VFO='B')
                 #print('Split is on',frqB,modeB)
-                print('Split is on - mode B=',modeB)
+                if self.VERBOSITY>0:
+                    print('Split is on - mode B=',modeB)
                 #except:
                 #    print('Split is on - Unknown error')
             else:
-                print('Split is off')
+                if self.VERBOSITY>0:
+                    print('Split is off')
                 gui.split.setChecked( False )
         
         # Check band
@@ -144,8 +146,9 @@ class WatchDog:
 
         # This is consistent with the accepted definition of S-units but 
         # seems to read a little low on the ft991a - go with it for now
-        s=sock.read_meter('S')
-        print('s=',s,type(s))
+        s=sock.read_meter('S') 
+        if self.VERBOSITY>=2:
+            print('s=',s,type(s))
         db=float(s)*114./255.-54.
         if self.VERBOSITY>=2:
             print('S=',s,db)
@@ -189,7 +192,8 @@ class WatchDog:
         # 1.1 --> 13
         # 3   --> 128
         s=sock.read_meter('SWR')
-        print('swr=',s)
+        if self.VERBOSITY>0:
+            print('swr=',s)
         swr=s*2./128. + 1
         if self.VERBOSITY>=2:
             print('swr=',s,swr)

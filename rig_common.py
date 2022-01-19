@@ -34,6 +34,10 @@ import functools
 
 ################################################################################
 
+VERBOSITY=0
+
+################################################################################
+
 class RIG_COMMON():
     def __init__(self,parent,P):
         self.P=P
@@ -433,22 +437,27 @@ class RIG_COMMON():
 
     # Function to update rig filters
     def setRigFilter(self,ifilt,idx=0):
-        print('\nsetRigFilter: %d %d' % (ifilt,idx))
+        #VERBOSITY=1
+        if VERBOSITY>0:
+            print('\nsetRigFilter: %d %d' % (ifilt,idx))
         if ifilt==-1:
 
             self.change_filters()
 
             # Set combo boxes from rig filters
-            print('Current filter:',self.P.sock.filt)
+            if VERBOSITY>0:
+                print('Current filter:',self.P.sock.filt)
             if self.P.sock.filt[0]!=None:
                 idx1=self.filters1.index(self.P.sock.filt[0])
-                print('idx1=',idx1)
+                if VERBOSITY>0:
+                    print('idx1=',idx1)
                 self.filt1.setCurrentIndex(idx1)
             
             if self.P.sock.filt[1]!=None:
                 try:
                     idx2=self.filters2.index(self.P.sock.filt[1])
-                    print('idx2=',idx2)
+                    if VERBOSITY>0:
+                        print('idx2=',idx2)
                     self.filt2.setCurrentIndex(idx2)
                 except:
                     print('RIG_COMMON: setRigFilter - failure')
@@ -467,7 +476,9 @@ class RIG_COMMON():
                         self.setRigFilter(-1)
                 except:
                     pass
-        print('setRigFilter: Done\n')
+                
+        if VERBOSITY>0:
+            print('setRigFilter: Done\n')
 
                     
     # Function to handle PTT
