@@ -29,6 +29,7 @@ else:
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 from rig_io.socket_io import *
+from utilities import freq2band
 
 ################################################################################
 
@@ -59,7 +60,9 @@ class RIG_CONTROL():
         lab = QLabel("Band:")
         grid.addWidget(lab,row,0)
         self.band_buttons={};
-        bb = str( self.sock.get_band() )+'m'
+        #bb = str( self.sock.get_band() )+'m'
+        frq = 1e-6*self.sock.get_freq() 
+        bb  = freq2band(frq)
         print('bb=',bb)
 
         ALL_BANDS=CONTEST_BANDS + NON_CONTEST_BANDS
