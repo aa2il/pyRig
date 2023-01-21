@@ -10,8 +10,10 @@
 #set ROOT="/media/${USER}/pi"
 #set ROOT="/media/${USER}/aa2il"
 set ROOT="/media/${USER}/marconi"
+set ROOT="/media/${USER}/sproul"
 #set ROOT="/media/${USER}/3D76-ECB1/Xfer"
 #set ROOT="/media/${USER}/cartman"
+set ROOT="/media/${USER}/acer"
 if( !(-e $ROOT) )then
     set ROOT=${ROOT}2
 endif
@@ -29,7 +31,7 @@ echo OLD=$old
 #set OLD="work2"
 
 rm -f DIFFS
-foreach i (*.py rotor DIFF)
+foreach i (*.py rotor DIFF *.bat)
     echo $i
     set n=`diff -w $old/$i $i | wc -l`
     if( !( -e $old/$i ) )then

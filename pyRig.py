@@ -22,14 +22,9 @@
 #
 ############################################################################
 
-from __future__ import print_function
 import sys
-if False:
-    from PyQt4.QtGui import *
-    from PyQt4.QtCore import QTimer
-else:
-    from PyQt5.QtWidgets import *
-    from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QTimer
 import argparse
 from pprint import pprint
 import rig_io.socket_io as socket_io
@@ -123,7 +118,7 @@ class pyRIG_GUI(QMainWindow):
         col=0
         self.btn2 = QPushButton('Quit') 
         self.btn2.setToolTip('Click to Quit')
-        self.btn2.clicked.connect(exit)
+        self.btn2.clicked.connect(self.Quit)
         self.grid.addWidget(self.btn2,row,col,1,1)
         
         # Tab for most common rig function
@@ -143,6 +138,10 @@ class pyRIG_GUI(QMainWindow):
         self.rotor_ctrl = ROTOR_CONTROL(self.tabs,P)
         if not P.sock.active:
             self.tabs.setCurrentIndex(self.tabs.count()-1)
+
+    def Quit(self):
+        print('Bye Bye!')
+        sys.exit(0)
 
 ################################################################################
 

@@ -1,7 +1,7 @@
 ############################################################################
 #
 # Watch Dog - Rev 1.0
-# Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-3 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Watch dog timer for pyRig
 #
@@ -156,7 +156,7 @@ class WatchDog:
             txt="S{:.1f}".format((db+54)/9.)
         else:
             txt="S9+"+"{:.1f}".format(db)
-        gui.smeter.setValue(s)
+        gui.smeter.setValue(int(s))
         gui.smeter_txt.setText( txt )
 
         # Read power
@@ -183,7 +183,7 @@ class WatchDog:
                 #    watts=0
             if self.VERBOSITY>=2:
                 print('power=',s,watts,dbw)
-            gui.pwr.setValue(s)
+            gui.pwr.setValue(int(s))
             txt="{:.1f}W".format(watts)
             gui.pwr_txt.setText( txt )
             
@@ -197,7 +197,7 @@ class WatchDog:
         swr=s*2./128. + 1
         if self.VERBOSITY>=2:
             print('swr=',s,swr)
-        gui.swr.setValue(s)
+        gui.swr.setValue(int(s))
         txt="{:.1f}".format(swr)
         gui.swr_txt.setText( txt )
         if swr>3:
@@ -214,7 +214,7 @@ class WatchDog:
         s=sock.read_meter('Comp')
         if self.VERBOSITY>=2:
             print('comp=',s)
-        gui.comp.setValue(s)
+        gui.comp.setValue(int(s))
             
         # Read ALC - no markings so use S-meter markings.
         # We're worried about anything above S9 which is about 60 for alc
@@ -222,7 +222,7 @@ class WatchDog:
         alc=s/60.
         if self.VERBOSITY>=2:
             print('alc=',s,alc)
-        gui.alc.setValue(s)
+        gui.alc.setValue(int(s))
         txt="{:.1f}".format(alc)
         gui.alc_txt.setText( txt )
         if alc>1:
