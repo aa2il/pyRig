@@ -1,7 +1,7 @@
 ############################################################################
 #
 # rotor_control.py - Rev 1.0
-# Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-3 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Portion of GUI related to rotor controls
 #
@@ -28,6 +28,7 @@ else:
     # use Qt5
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
+import functools
 from rig_io.socket_io import *
 from widgets import *
 try:
@@ -130,14 +131,22 @@ class ROTOR_CONTROL():
         self.grid_sq = QLineEdit()
         self.grid_sq.setToolTip('Point to a Grid')
         self.grid.addWidget(self.grid_sq,row,col+1,1,3)
-        self.grid_sq.returnPressed.connect(self.newGridSquare)
+        self.grid_sq.returnPressed.connect( functools.partial( self.newGridSquare,False ))
+
+        # Add button to point to grid square
+        col+=5
+        self.btn = QPushButton('Point to Grid') 
+        self.btn.setToolTip('Point to Grid Square')
+        self.btn.clicked.connect( functools.partial( self.newGridSquare,True ))
+        self.grid.addWidget(self.btn,row,col,1,2)
         
         # Add button to zero the rotor
-        col=5
-        self.btn = QPushButton('Rotor Home') 
-        self.btn.setToolTip('Rotor to 0 az/el')
-        self.btn.clicked.connect(self.rotorHome)
-        self.grid.addWidget(self.btn,row,col,1,4)
+        if True:
+            col+=2
+            self.btn = QPushButton('Rotor Home') 
+            self.btn.setToolTip('Rotor to 0 az/el')
+            self.btn.clicked.connect(self.rotorHome)
+            self.grid.addWidget(self.btn,row,col,1,2)
         
         
     # Function to update rotor az
@@ -182,18 +191,24 @@ class ROTOR_CONTROL():
         self.ellcd2.set(pos[1])
 
     # Function to point rotor toward a user specified grid square
-    def newGridSquare(self):
+    def newGridSquare(self,point):
         txt=self.grid_sq.text().upper()
         MY_GRID = self.P.SETTINGS['MY_GRID']
-        print('newGridSquare:',MY_GRID,'\t-->\t',txt)
+        print('newGridSquare:',MY_GRID,'\t-->\ttxt=',txt,'\tpoint=',point)
         if bearing_ok:
             try:
-                bearing = calculate_heading(MY_GRID,txt)
-                print('bearing=',bearing)
-                self.azlcd2.set(bearing)
-                self.setRotorAz(bearing)
-            except:
+                az = calculate_heading(MY_GRID,txt)
+                if az>180:
+                    az-=360
+                elif az<-179.9:
+                    az+=360
+                print('bearing=',az)
+                self.azlcd2.set(az)
+                if point:
+                    self.setRotorAz(a)
+            except Exception as e: 
                 print('Problem computing bearing for',MY_GRID,txt)
+                print( str(e) )
 
     # Function to give nominal direction info
     def nominalBearing(self):
