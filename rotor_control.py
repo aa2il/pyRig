@@ -205,7 +205,7 @@ class ROTOR_CONTROL():
                 print('bearing=',az)
                 self.azlcd2.set(az)
                 if point:
-                    self.setRotorAz(a)
+                    self.setRotorAz(az)
             except Exception as e: 
                 print('Problem computing bearing for',MY_GRID,txt)
                 print( str(e) )
