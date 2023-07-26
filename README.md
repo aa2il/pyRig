@@ -91,6 +91,4 @@ GUI for remote rig and rotor control.
 # Installation for Windoz:
 
 1) Best bet is to use mini-conda and follow the instructions above.
-2) There is an older compiled binary/installer listed on the right panel
-   of this screen.  If you want/need a more recent binary, email me
-   or follow the steps in windoz.bat to build it from the source.
+2) If you want/need a more recent binary, email me.
