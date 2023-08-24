@@ -66,8 +66,9 @@ class RIG_CONTROL():
         print('bb=',bb)
 
         ALL_BANDS=CONTEST_BANDS + NON_CONTEST_BANDS
-        if self.P.sock.rig_type2=='FT991a' or self.P.sock.rig_type2=='IC9700' or \
-            self.P.sock.rig_type2=='Dummy':
+        if self.P.sock.rig_type2=='FT991a' or \
+           self.P.sock.rig_type2 in ['IC9700'] or \
+           self.P.sock.rig_type2=='Dummy':
             ALL_BANDS.append('2m')
             ALL_BANDS.append('70cm')
         
