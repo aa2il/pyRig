@@ -2,7 +2,7 @@
 ############################################################################
 #
 # pyRig.py - Rev 1.0
-# Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-4 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Gui for remote rig & rotor control.  This is rather primative right now.
 # Flrig is much better but I mainly want a rotor controller.  Need to spend

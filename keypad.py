@@ -29,7 +29,7 @@ else:
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 from rig_io.socket_io import *
-from widgets import *
+#from widgets_qt import *
 from rig_io.ft_tables import *
 import functools
 

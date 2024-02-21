@@ -1,7 +1,7 @@
 ############################################################################
 #
 # rig_common.py - Rev 1.0
-# Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-4 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Gui for controlling the most common rig functions
 #
@@ -29,7 +29,7 @@ else:
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 from rig_io.socket_io import *
-from widgets import *
+from widgets_qt import *
 import functools
 
 ################################################################################

@@ -1,7 +1,7 @@
 ############################################################################
 #
 # rotor_control.py - Rev 1.0
-# Copyright (C) 2021-3 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-4 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Portion of GUI related to rotor controls
 #
@@ -30,7 +30,7 @@ else:
     from PyQt5.QtWidgets import *
 import functools
 from rig_io.socket_io import *
-from widgets import *
+from widgets_qt import *
 try:
     from pyhamtools.locator import calculate_heading
     bearing_ok=True
