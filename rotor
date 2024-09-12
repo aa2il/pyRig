@@ -83,8 +83,9 @@ set MODEL     = 603                        # Yaesu GS-232B
 set PORT      = 4533
 set TEST_MODE = 0                          # 0=None, 1=rotctl, 2=miniterm
 
-#set HAMLIB_DIR   = "~/hamlib-4.2/tests"    # V4.2 - works just fine
-set HAMLIB_DIR   = "~/hamlib-4.3.1/tests"    # Most recent stable version
+#set HAMLIB_DIR   = "~/hamlib-4.2/tests"     # V4.2 - works just fine
+#set HAMLIB_DIR   = "~/hamlib-4.3.1/tests"   # Very old stable version
+set HAMLIB_DIR   = "~/hamlib-4.5.5/tests"    # Most recent stable version
 
 ###############################################################################
 
