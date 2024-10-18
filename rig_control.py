@@ -21,10 +21,14 @@
 #
 ############################################################################
 
-if False:
-    # use Qt4 
-    from PyQt4.QtCore import * 
-else:
+try:
+    if True:
+        from PyQt6.QtWidgets import *
+        from PyQt6.QtCore import Qt
+    else:
+        from PySide6.QtWidgets import *
+        from PySide6.QtCore import Qt
+except ImportError:
     # use Qt5
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
@@ -118,10 +122,10 @@ class RIG_CONTROL():
         ncol=5
         lab = QLabel("TX Power:")
         grid.addWidget(lab,row,0)
-        self.pwr_slider = QSlider(Qt.Horizontal)
+        self.pwr_slider = QSlider(Qt.Orientation.Horizontal)
         self.pwr_slider.setMinimum(5)
         self.pwr_slider.setMaximum(100)
-        self.pwr_slider.setTickPosition(QSlider.TicksBelow)
+        self.pwr_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.pwr_slider.setTickInterval(25)
         self.pwr_slider.valueChanged.connect(self.powerCB)
         grid.addWidget(self.pwr_slider,row,1,1,ncol-1)
@@ -133,11 +137,11 @@ class RIG_CONTROL():
         col  = 0
         lab = QLabel("Mic Gain:")
         grid.addWidget(lab,row,0)
-        self.mic_slider = QSlider(Qt.Horizontal)
+        self.mic_slider = QSlider(Qt.Orientation.Horizontal)
         self.mic_slider.setMinimum(0)
         self.mic_slider.setMaximum(100)
         self.mic_slider.setValue(20)
-        self.mic_slider.setTickPosition(QSlider.TicksBelow)
+        self.mic_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.mic_slider.setTickInterval(25)
         self.mic_slider.valueChanged.connect(self.gainCB)
         grid.addWidget(self.mic_slider,row,1,1,ncol-1)
@@ -149,11 +153,11 @@ class RIG_CONTROL():
         col  = 0
         lab = QLabel("Monitor:")
         grid.addWidget(lab,row,0)
-        self.mon_slider = QSlider(Qt.Horizontal)
+        self.mon_slider = QSlider(Qt.Orientation.Horizontal)
         self.mon_slider.setMinimum(0)
         self.mon_slider.setMaximum(100)
         self.mon_slider.setValue(30)
-        self.mon_slider.setTickPosition(QSlider.TicksBelow)
+        self.mon_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         self.mon_slider.setTickInterval(25)
         self.mon_slider.valueChanged.connect(self.monitorCB)
         grid.addWidget(self.mon_slider,row,1,1,ncol-1)

@@ -21,12 +21,14 @@
 #
 ############################################################################
 
-if False:
-    # use Qt4 
-    from PyQt4.QtCore import * 
-else:
+try:
+    if True:
+        from PyQt6.QtWidgets import *
+    else:
+        from PySide6.QtWidgets import *
+except ImportError:
     # use Qt5
-    from PyQt5.QtCore import * 
+    #from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 from rig_io.socket_io import *
 #from widgets_qt import *
@@ -39,7 +41,9 @@ class KEY_PAD():
     def __init__(self,parent,P):
         self.P=P
 
+        print('Creating key pad ...')
         self.tab = QWidget()
+        print('hhhheeey')
         parent.addTab(self.tab,"Key Pad")
         
         self.grid = QGridLayout()

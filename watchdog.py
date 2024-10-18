@@ -20,10 +20,14 @@
 ############################################################################
 
 from __future__ import print_function
-if False:
-    from PyQt4.QtGui import *
-    from PyQt4.QtCore import QTimer
-else:
+try:
+    if True:
+        from PyQt6.QtWidgets import *
+        from PyQt6.QtCore import QTimer
+    else:
+        from PySide6.QtWidgets import *
+        from PySide6.QtCore import QTimer
+except ImportError:
     from PyQt5.QtWidgets import *
     from PyQt5.QtCore import QTimer
 

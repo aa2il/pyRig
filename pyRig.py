@@ -23,8 +23,17 @@
 ############################################################################
 
 import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import QTimer
+try:
+    if True:
+        from PyQt6.QtWidgets import *
+        from PyQt6.QtCore import QTimer
+    else:
+        from PySide6.QtWidgets import *
+        from PySide6.QtCore import QTimer
+except ImportError:
+    # use Qt5
+    from PyQt5.QtWidgets import *
+    from PyQt5.QtCore import QTimer
 import argparse
 from pprint import pprint
 import rig_io.socket_io as socket_io
@@ -128,16 +137,20 @@ class pyRIG_GUI(QMainWindow):
         self.rig_ctrl = RIG_CONTROL(self.tabs,P)
 
         # Tab to control vfos in more detail
+        print('Hey 5')
         self.rig_vfos = RIG_VFOS(self.tabs,P)
 
         # Tab for the key pad
+        print('Hey 6')
         if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
             self.key_pad = KEY_PAD(self.tabs,P)
 
         # Tab to control rotor
+        print('Hey 7')
         self.rotor_ctrl = ROTOR_CONTROL(self.tabs,P)
         if not P.sock.active:
             self.tabs.setCurrentIndex(self.tabs.count()-1)
+        print('Hey 8')
 
     def Quit(self):
         print('Bye Bye!')
@@ -153,6 +166,7 @@ if __name__ == '__main__':
     pprint(vars(P))
 
     # Open connection to rig
+    print('\n=============== Opening connection to rig ....')
     P.sock = socket_io.open_rig_connection(P.RIG_CONNECTION,0,P.PORT,0,'RIG',rig=P.RIG)
     if not P.sock.active and P.sock.connection!='NONE':
         print('*** No connection available to rig ***')
@@ -161,16 +175,21 @@ if __name__ == '__main__':
         print('Opened socket to:',P.sock.rig_type,P.sock.rig_type1,P.sock.rig_type2)
 
     # Open connection to rotor
+    print('\n=============== Opening connection to rotor ....')
     P.sock2 = socket_io.open_rig_connection(P.ROTOR_CONNECTION,0,P.PORT2,0,'ROTOR')
     if not P.sock2.active and P.sock2.connection!='NONE':
         print('*** No connection available to rotor ***')
         sys.exit(0)
 
     # Create application and gui
+    print('\n=============== Creating App ....')
     P.app     = QApplication(sys.argv)
+    print('\n=============== Creating Mintor ....')
     P.monitor = WatchDog(P,2000)
+    print('\n=============== Creating Gui ....')
     P.gui     = pyRIG_GUI(P)
 
     # Event loop
-    sys.exit(P.app.exec_())
+    print('\n=============== Mainloop ...')
+    sys.exit(P.app.exec())
 

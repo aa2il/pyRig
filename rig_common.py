@@ -21,10 +21,14 @@
 #
 ############################################################################
 
-if False:
-    # use Qt4 
-    from PyQt4.QtCore import * 
-else:
+try:
+    if True:
+        from PyQt6.QtWidgets import *
+        from PyQt6.QtCore import QTimer
+    else:
+        from PySide6.QtWidgets import *
+        from PySide6.QtCore import QTimer
+except ImportError:
     # use Qt5
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
