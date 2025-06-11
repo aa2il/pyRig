@@ -1,7 +1,7 @@
 ############################################################################
 #
 # rig_control.py - Rev 1.0
-# Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-5 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Portion of GUI related to rig controls
 #
@@ -21,15 +21,13 @@
 #
 ############################################################################
 
-try:
-    if True:
-        from PyQt6.QtWidgets import *
-        from PyQt6.QtCore import Qt
-    else:
-        from PySide6.QtWidgets import *
-        from PySide6.QtCore import Qt
-except ImportError:
-    # use Qt5
+if False:
+    from PyQt6.QtWidgets import *
+    from PyQt6.QtCore import Qt
+elif True:
+    from PySide6.QtWidgets import *
+    from PySide6.QtCore import Qt
+else:
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 from rig_io.socket_io import *

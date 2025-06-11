@@ -31,7 +31,7 @@ echo OLD=$old
 #set OLD="work2"
 
 rm -f DIFFS
-foreach i (*.py rotor DIFF *.bat)
+foreach i (*.py rotor DIFF *.bat *.md *.txt)
     echo $i
     set n=`diff -w $old/$i $i | wc -l`
     if( !( -e $old/$i ) )then

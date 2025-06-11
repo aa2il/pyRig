@@ -4,6 +4,56 @@ GUI for remote rig and rotor control.
       
 ![Screen Shot]( Docs/pyRig.png)
 
+# Installation under Linux using uv:
+
+0) This seems to be the easiest/best solution.  uv is relatively new and is fast and easy compared to other solutions.  However, it does have a a problem running some tkinter gui apps with recent versions of python.  Of course, to use uv, you need to have it installed on your system:
+
+        curl -LsSf https://astral.sh/uv/install.sh | sh      
+        rehash     
+
+1) Clone gitub repositories
+
+        cd
+        mkdir Python
+        cd Python
+        git clone https://github.com/aa2il/pyRig
+        git clone https://github.com/aa2il/libs
+        git clone https://github.com/aa2il/data
+      
+2) One of the features of uv is that the virtual environment (a.k.a. container or sandbox) is included in the github repository.  You should NOT have to do anything since uv will install the environment and required packages the first time you run any of these codes.
+
+   For the record, here is how I set up the environment:
+
+        cd ~/Python/pyRig
+        uv init --python 3.12
+        rm main.py
+        uv add -r requirements.txt
+   
+   *** There is a problem with python 3.13 & tk under uv - use 3.12 until we figure this out ***
+   *** It is a known issue and hopefully will get resolved b4 we fall too far behind ***
+   
+        https://github.com/astral-sh/python-build-standalone/issues/146  7036  and  11942
+   
+3) Make sure its executable and set PYTHON PATH so os can find libraries:
+
+        cd ~/Python/pyKeyer
+        chmod +x pyKeyer.py start start_cw
+
+        - Under tcsh:      setenv PYTHONPATH $HOME/Python/libs
+        - Under bash:      export PYTHONPATH="$HOME/Python/libs"
+   
+4) Bombs away:
+
+        uv run pyKeyer.py
+        uv run paddling.py
+        uv run qrz.py
+
+   or, 
+
+        ./pyKeyer.py
+        ./paddling.py
+        ./qrz.py
+
 # Installation under Linux:
 
 1) Uses python3 and tkinter

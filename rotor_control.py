@@ -1,7 +1,7 @@
 ############################################################################
 #
 # rotor_control.py - Rev 1.0
-# Copyright (C) 2021-4 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-5 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Portion of GUI related to rotor controls
 #
@@ -21,15 +21,13 @@
 #
 ############################################################################
 
-try:
-    if True:
-        from PyQt6.QtWidgets import *
-        from PyQt6.QtCore import QTimer
-    else:
-        from PySide6.QtWidgets import *
-        from PySide6.QtCore import QTimer
-except ImportError:
-    # use Qt5
+if False:
+    from PyQt6.QtWidgets import *
+    from PyQt6.QtCore import QTimer
+elif True:
+    from PySide6.QtWidgets import *
+    from PySide6.QtCore import QTimer
+else:
     from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 import functools

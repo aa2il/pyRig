@@ -1,8 +1,10 @@
-#! /usr/bin/python3 -u
+#!/usr/bin/env -S uv run --script
+#
+# OLD: !/usr/bin/python3 -u
 ############################################################################
 #
 # pyRig.py - Rev 1.0
-# Copyright (C) 2021-4 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-5 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Gui for remote rig & rotor control.  This is rather primative right now.
 # Flrig is much better but I mainly want a rotor controller.  Need to spend
@@ -23,15 +25,14 @@
 ############################################################################
 
 import sys
-try:
-    if True:
-        from PyQt6.QtWidgets import *
-        from PyQt6.QtCore import QTimer
-    else:
-        from PySide6.QtWidgets import *
-        from PySide6.QtCore import QTimer
-except ImportError:
-    # use Qt5
+if False:
+    from PyQt6.QtWidgets import *
+    from PyQt6.QtCore import QTimer
+elif True:
+    from PySide6.QtWidgets import *
+    from PySide6.QtCore import QTimer
+else:
+    # Get rid of this soon
     from PyQt5.QtWidgets import *
     from PyQt5.QtCore import QTimer
 import argparse

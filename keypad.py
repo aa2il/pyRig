@@ -1,7 +1,7 @@
 ############################################################################
 #
 # keypad.py - Rev 1.0
-# Copyright (C) 2021 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-5 by Joseph B. Attili, aa2il AT arrl DOT net
 #
 # Portion of Gui for programming Yaesu key pad.
 #
@@ -21,13 +21,11 @@
 #
 ############################################################################
 
-try:
-    if True:
-        from PyQt6.QtWidgets import *
-    else:
-        from PySide6.QtWidgets import *
-except ImportError:
-    # use Qt5
+if False:
+    from PyQt6.QtWidgets import *
+elif True:
+    from PySide6.QtWidgets import *
+else:
     #from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 from rig_io.socket_io import *
