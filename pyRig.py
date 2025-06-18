@@ -28,7 +28,7 @@ import sys
 if True:
     # Dynamic importing - this works!
     from widgets_qt import QTLIB
-    #exec('from '+QTLIB+'.QtWidgets import *')
+    exec('from '+QTLIB+'.QtWidgets import QMainWindow,QApplication,QWidget,QGridLayout,QTabWidget,QPushButton')
     exec('from '+QTLIB+'.QtCore import QTimer')
 elif False:
     from PyQt6.QtWidgets import *
@@ -128,13 +128,14 @@ class pyRIG_GUI(QMainWindow):
         self.tabs = QTabWidget()
         self.grid.addWidget(self.tabs, row,col)
 
-        # Add button to exit
-        row+=1
-        col=0
-        self.btn2 = QPushButton('Quit') 
-        self.btn2.setToolTip('Click to Quit')
-        self.btn2.clicked.connect(self.Quit)
-        self.grid.addWidget(self.btn2,row,col,1,1)
+        # Add button to exit app
+        if False:
+            row+=1
+            col=0
+            self.btn2 = QPushButton('Quit') 
+            self.btn2.setToolTip('Click to Quit pyRig')
+            self.btn2.clicked.connect(self.Quit)
+            self.grid.addWidget(self.btn2,row,col,1,1)
         
         # Tab for most common rig function
         self.rig_common = RIG_COMMON(self.tabs,P)
@@ -143,20 +144,16 @@ class pyRIG_GUI(QMainWindow):
         self.rig_ctrl = RIG_CONTROL(self.tabs,P)
 
         # Tab to control vfos in more detail
-        print('Hey 5')
         self.rig_vfos = RIG_VFOS(self.tabs,P)
 
         # Tab for the key pad
-        print('Hey 6')
         if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
             self.key_pad = KEY_PAD(self.tabs,P)
 
         # Tab to control rotor
-        print('Hey 7')
         self.rotor_ctrl = ROTOR_CONTROL(self.tabs,P)
         if not P.sock.active:
             self.tabs.setCurrentIndex(self.tabs.count()-1)
-        print('Hey 8')
 
     def Quit(self):
         print('Bye Bye!')

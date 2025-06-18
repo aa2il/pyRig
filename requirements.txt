@@ -17,3 +17,4 @@ unidecode
 numpy
 pytz
 psutil
+pyhamtools

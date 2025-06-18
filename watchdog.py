@@ -19,10 +19,15 @@
 #
 ############################################################################
 
-if False:
+if True:
+    # Dynamic importing - this works!
+    from widgets_qt import QTLIB
+    #exec('from '+QTLIB+'.QtWidgets import *')
+    exec('from '+QTLIB+'.QtCore import QTimer')
+elif False:
     from PyQt6.QtWidgets import *
     from PyQt6.QtCore import QTimer
-elif True:
+elif False:
     from PySide6.QtWidgets import *
     from PySide6.QtCore import QTimer
 else:

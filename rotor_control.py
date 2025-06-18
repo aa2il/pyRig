@@ -21,10 +21,15 @@
 #
 ############################################################################
 
-if False:
+if True:
+    # Dynamic importing - this works!
+    from widgets_qt import QTLIB
+    exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QLineEdit,QPushButton')
+    exec('from '+QTLIB+'.QtCore import QTimer')
+elif False:
     from PyQt6.QtWidgets import *
     from PyQt6.QtCore import QTimer
-elif True:
+elif False:
     from PySide6.QtWidgets import *
     from PySide6.QtCore import QTimer
 else:
@@ -33,11 +38,7 @@ else:
 import functools
 from rig_io.socket_io import *
 from widgets_qt import *
-try:
-    from pyhamtools.locator import calculate_heading
-    bearing_ok=True
-except:
-    bearing_ok=False
+from pyhamtools.locator import calculate_heading
 
 ################################################################################
 
@@ -63,10 +64,11 @@ class ROTOR_CONTROL():
         # Add Az controls - top is desired, bottom is actual
         row=0
         col=0
-        lb=QLabel("Azimuth:")
-        self.grid.addWidget(lb,row,col)
+        self.azlb=QLabel("Azimuth:")
+        self.grid.addWidget(self.azlb,row,col)
         self.direction = QLineEdit()
-        self.direction.setAlignment(Qt.AlignCenter)
+        #self.direction.setAlignment(Qt.AlignCenter)
+        self.direction.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.grid.addWidget(self.direction,row,col+1,1,3)
 
         row+=1
@@ -89,11 +91,12 @@ class ROTOR_CONTROL():
 
         # Add El controls - top is desired, bottom is actual
         row=0
-        col=5
-        lb=QLabel("Elevation:")
-        self.grid.addWidget(lb,row,col)
+        col=4  # 5
+        self.ellb=QLabel("Elevation:")
+        self.grid.addWidget(self.ellb,row,col)
         self.direction2 = QLineEdit()
-        self.direction2.setAlignment(Qt.AlignCenter)
+        #self.direction2.setAlignment(Qt.AlignCenter)
+        self.direction2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.grid.addWidget(self.direction2,row,col+1,1,3)
 
         row+=1
@@ -113,6 +116,13 @@ class ROTOR_CONTROL():
         self.ellcd2.adjustSize()
         self.grid.addWidget(self.ellcd2,row,col,2,4)
         #self.grid.addWidget(self.ellcd2,row,col,Qt.AlignRight)
+
+        # Disable el controls for now
+        if True:
+            self.ellb.setEnabled(False)
+            self.direction2.setEnabled(False)
+            self.ellcd1.setEnabled(False)
+            self.ellcd2.setEnabled(False)
         
         # Initial positions
         pos=self.sock.get_position()
@@ -136,19 +146,40 @@ class ROTOR_CONTROL():
         self.grid_sq.returnPressed.connect( functools.partial( self.newGridSquare,False ))
 
         # Add button to point to grid square
-        col+=5
-        self.btn = QPushButton('Point to Grid') 
-        self.btn.setToolTip('Point to Grid Square')
-        self.btn.clicked.connect( functools.partial( self.newGridSquare,True ))
-        self.grid.addWidget(self.btn,row,col,1,2)
+        col+=4 # 5
+        self.btn1 = QPushButton('Point to Grid') 
+        self.btn1.setToolTip('Point to Grid Square')
+        self.btn1.clicked.connect( functools.partial( self.newGridSquare,True ))
+        self.grid.addWidget(self.btn1,row,col,1,2)
         
         # Add button to zero the rotor
         if True:
             col+=2
-            self.btn = QPushButton('Rotor Home') 
-            self.btn.setToolTip('Rotor to 0 az/el')
-            self.btn.clicked.connect(self.rotorHome)
-            self.grid.addWidget(self.btn,row,col,1,2)
+            self.btn2 = QPushButton('Rotor Home') 
+            self.btn2.setToolTip('Rotor to 0 az/el')
+            self.btn2.clicked.connect(self.rotorHome)
+            self.grid.addWidget(self.btn2,row,col,1,2)
+        
+        # Add button to stop rotor
+        if True:
+            row+=1
+            col=0
+            ncols = self.grid.columnCount()
+            self.btn3 = QPushButton('Stop Rotor') 
+            self.btn3.setToolTip('Click to Stop Rotor')
+            self.btn3.clicked.connect(self.stopRotor)
+            self.grid.addWidget(self.btn3,row,col,1,ncols)
+
+        # Equally weight the columns
+        print('COLS:',ncols,self.grid.horizontalSpacing())
+        wmin=min(self.azlcd1.width(),self.ellcd1.width())
+        print('widths=',self.azlcd1.width(),self.ellcd1.width(),wmin)
+        for col in range(ncols):
+            #print(col,self.grid.columnStretch(col))
+            self.grid.setColumnStretch(col,1)
+            self.grid.setColumnMinimumWidth(col,wmin+1)
+            
+            
         
         
     # Function to update rotor az
@@ -192,25 +223,29 @@ class ROTOR_CONTROL():
         self.azlcd2.set(pos[0])
         self.ellcd2.set(pos[1])
 
+    # Function to stop rotor 
+    def stopRotor(self):
+        print('rotorStop...')
+        self.sock.stop_rotor()
+
     # Function to point rotor toward a user specified grid square
     def newGridSquare(self,point):
         txt=self.grid_sq.text().upper()
         MY_GRID = self.P.SETTINGS['MY_GRID']
         print('newGridSquare:',MY_GRID,'\t-->\ttxt=',txt,'\tpoint=',point)
-        if bearing_ok:
-            try:
-                az = calculate_heading(MY_GRID,txt)
-                if az>180:
-                    az-=360
-                elif az<-179.9:
-                    az+=360
-                print('bearing=',az)
-                self.azlcd2.set(az)
-                if point:
-                    self.setRotorAz(az)
-            except Exception as e: 
-                print('Problem computing bearing for',MY_GRID,txt)
-                print( str(e) )
+        try:
+            az = calculate_heading(MY_GRID,txt)
+            if az>180:
+                az-=360
+            elif az<-179.9:
+                az+=360
+            print('bearing=',az)
+            self.azlcd2.set(az)
+            if point:
+                self.setRotorAz(az)
+        except Exception as e: 
+            print('neGridSquare: Problem computing bearing for',MY_GRID,txt)
+            print( str(e) )
 
     # Function to give nominal direction info
     def nominalBearing(self):

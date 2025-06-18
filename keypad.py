@@ -21,9 +21,14 @@
 #
 ############################################################################
 
-if False:
+if True:
+    # Dynamic importing - this works!
+    from widgets_qt import QTLIB
+    #exec('from '+QTLIB+'.QtWidgets import *')
+    #exec('from '+QTLIB+'.QtCore import Qt')
+elif False:
     from PyQt6.QtWidgets import *
-elif True:
+elif False:
     from PySide6.QtWidgets import *
 else:
     #from PyQt5.QtCore import * 
