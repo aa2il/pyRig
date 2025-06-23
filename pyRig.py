@@ -71,6 +71,8 @@ class PARAMS:
                       choices=['HAMLIB','NONE'])
         arg_proc.add_argument("-port2", help="Rotor onnection Port",
                               type=int,default=0)
+        arg_proc.add_argument('-azel', action='store_true',
+                              help='Rotor is az-el (az-only is default)')
         args = arg_proc.parse_args()
 
         self.RIG_CONNECTION   = args.rig[0]
@@ -84,7 +86,8 @@ class PARAMS:
         if self.ROTOR_CONNECTION=='HAMLIB' and self.PORT2==0:
             self.PORT2        = 4533
         
-        self.PANADAPTOR       = False
+        #self.PANADAPTOR       = False
+        self.AZ_ONLY          = not args.azel
 
         # Read config file
         #self.RCFILE=os.path.expanduser("~/.pyRigrc")

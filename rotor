@@ -153,7 +153,7 @@ $HAMLIB_DIR/$CMD $OPTS &
 
 # Start rig/rotor control gui
 cd ~/Python/pyRig
-set CMD="pyRig.py -rotor HAMLIB -port2 4533 $1 $2 $3 $4"
+set CMD="pyRig.py -azel -rotor HAMLIB -port2 4533 $1 $2 $3 $4"
 echo " "
 echo CMD=$CMD
 echo " "

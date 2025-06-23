@@ -24,17 +24,13 @@
 if True:
     # Dynamic importing - this works!
     from widgets_qt import QTLIB
-    #exec('from '+QTLIB+'.QtWidgets import *')
-    #exec('from '+QTLIB+'.QtCore import Qt')
 elif False:
     from PyQt6.QtWidgets import *
 elif False:
     from PySide6.QtWidgets import *
 else:
-    #from PyQt5.QtCore import * 
     from PyQt5.QtWidgets import *
 from rig_io.socket_io import *
-#from widgets_qt import *
 from rig_io.ft_tables import *
 import functools
 

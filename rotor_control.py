@@ -117,8 +117,8 @@ class ROTOR_CONTROL():
         self.grid.addWidget(self.ellcd2,row,col,2,4)
         #self.grid.addWidget(self.ellcd2,row,col,Qt.AlignRight)
 
-        # Disable el controls for now
-        if True:
+        # Disable el controls for AZ-only rotors
+        if self.P.AZ_ONLY:
             self.ellb.setEnabled(False)
             self.direction2.setEnabled(False)
             self.ellcd1.setEnabled(False)
