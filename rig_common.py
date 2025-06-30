@@ -408,15 +408,20 @@ class RIG_COMMON():
         print('\n--------- setRigMode: %d %s' % (idx,self.modes[idx]))
         if idx==-1:
             # Set combo box from rig mode
-            mode=self.P.sock.mode
-            if mode in ['CW-U','CW-L','CW-R','CWR']:
+            mode1=self.P.sock.mode
+            if mode1 in ['CW-U','CW-L','CW-R','CWR']:
                 mode='CW'
-            elif mode in ['RTTY','PSK-U','DATA-U']:
-                mode='PKTUSB'
-            elif mode=='AMN':
+            elif mode1 in ['SSB']:
+                mode='USB'
+            elif mode1 in ['RTTY','PSK-U','DATA-U']:
+                mode1='PKTUSB'
+            elif mode1 in ['AMN']:
                 mode='AM'
-            elif mode=='FMN':
+            elif mode1 in ['FMN']:
                 mode='FM'
+            else:
+                mode=mode1
+            print('\tmode1=',mode1,'\tmode=',mode,'\tmodes=',self.modes)
             idx=self.modes.index(mode)
             self.mode.setCurrentIndex(idx)
         else:
@@ -564,19 +569,24 @@ class RIG_VFOS():
     # Callback for VFO Mode list spinner
     def set_vfo_mode(self,vfo,iopt,mode=None):
 
-        print('\nRIG_VFOS: SET_VFO_MODE Spinner callback - vfo=',vfo,'\topt=',iopt,'\tmode=',mode)
+        print('\nRIG_VFOS: SET_VFO_MODE Spinner callback - vfo=',vfo,
+              '\topt=',iopt,'\tmode=',mode)
         
         if iopt==-1 or mode==None:
             
             # Set spin box according to rig
-            mode = self.P.sock.get_mode(VFO=vfo)
+            mode = self.P.sock.get_mode(VFO=vfo,VERBOSITY=1)
             if mode in ['RTTY','DATA-U','PSK-U']:
                 mode='PKTUSB'
-            idx=self.MODE_LIST.index(mode)
-            if vfo=='A':
-                self.vfoA.setCurrentIndex(idx)
-            else:
-                self.vfoB.setCurrentIndex(idx)
+            print('\tmode=',mode)
+            try:
+                idx=self.MODE_LIST.index(mode)
+                if vfo=='A':
+                    self.vfoA.setCurrentIndex(idx)
+                else:
+                    self.vfoB.setCurrentIndex(idx)
+            except:
+                print('SET VFO MODE: Unable to read VFO',vfo)
 
         else:
 
