@@ -4,7 +4,7 @@
 ############################################################################
 #
 # pyRig.py - Rev 1.0
-# Copyright (C) 2021-5 by Joseph B. Attili, aa2il AT arrl DOT net
+# Copyright (C) 2021-5 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
 #
 # Gui for remote rig & rotor control.  This is rather primative right now.
 # Flrig is much better but I mainly want a rotor controller.  Need to spend
@@ -25,21 +25,9 @@
 ############################################################################
 
 import sys
-if True:
-    # Dynamic importing - this works!
-    from widgets_qt import QTLIB
-    exec('from '+QTLIB+'.QtWidgets import QMainWindow,QApplication,QWidget,QGridLayout,QTabWidget,QPushButton')
-    exec('from '+QTLIB+'.QtCore import QTimer')
-elif False:
-    from PyQt6.QtWidgets import *
-    from PyQt6.QtCore import QTimer
-elif False:
-    from PySide6.QtWidgets import *
-    from PySide6.QtCore import QTimer
-else:
-    # Get rid of this soon
-    from PyQt5.QtWidgets import *
-    from PyQt5.QtCore import QTimer
+from widgets_qt import QTLIB
+exec('from '+QTLIB+'.QtWidgets import QMainWindow,QApplication,QWidget,QGridLayout,QTabWidget,QPushButton')
+exec('from '+QTLIB+'.QtCore import QTimer')
 import argparse
 from pprint import pprint
 import rig_io.socket_io as socket_io
@@ -68,8 +56,8 @@ class PARAMS:
                               type=int,default=0)
         arg_proc.add_argument("-rotor", help="Rotor connection Type",
                       type=str,default="NONE",
-                      choices=['HAMLIB','NONE'])
-        arg_proc.add_argument("-port2", help="Rotor onnection Port",
+                      choices=['DIRECT','HAMLIB','NONE'])
+        arg_proc.add_argument("-port2", help="Rotor connection Port",
                               type=int,default=0)
         arg_proc.add_argument('-azel', action='store_true',
                               help='Rotor is az-el (az-only is default)')
