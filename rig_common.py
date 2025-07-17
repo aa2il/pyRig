@@ -24,7 +24,8 @@
 if True:
     # Dynamic importing - this works!
     from widgets_qt import QTLIB
-    exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QComboBox,QPushButton,QProgressBar,QLineEdit')
+    exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QComboBox,'+
+         'QPushButton,QProgressBar,QLineEdit,QButtonGroup')
     exec('from '+QTLIB+'.QtCore import QTimer')
 elif False:
     from PyQt6.QtWidgets import *

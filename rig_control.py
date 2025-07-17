@@ -21,20 +21,11 @@
 #
 ############################################################################
 
-if True:
-    # Dynamic importing - this works!
-    from widgets_qt import QTLIB
-    exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QButtonGroup,QLabel,QRadioButton,QSlider,QLineEdit,QPushButton')
-    exec('from '+QTLIB+'.QtCore import Qt')
-elif False:
-    from PyQt6.QtWidgets import *
-    from PyQt6.QtCore import Qt
-elif False:
-    from PySide6.QtWidgets import *
-    from PySide6.QtCore import Qt
-else:
-    from PyQt5.QtCore import * 
-    from PyQt5.QtWidgets import *
+from widgets_qt import QTLIB
+exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QButtonGroup,QLabel,QRadioButton,QSlider,QLineEdit,QPushButton')
+exec('from '+QTLIB+'.QtCore import Qt')
+
+from rig_io.ft_tables import ALL_BANDS
 from rig_io.socket_io import *
 from utilities import freq2band
 
@@ -72,15 +63,16 @@ class RIG_CONTROL():
         bb  = freq2band(frq)
         print('bb=',bb)
 
-        ALL_BANDS=CONTEST_BANDS + NON_CONTEST_BANDS
-        if self.P.sock.rig_type2=='FT991a' or \
-           self.P.sock.rig_type2 in ['IC9700'] or \
-           self.P.sock.rig_type2=='Dummy':
-            ALL_BANDS.append('2m')
-            ALL_BANDS.append('70cm')
-        
+        #ALL_BANDS=CONTEST_BANDS + NON_CONTEST_BANDS
+        #if self.P.sock.rig_type2=='FT991a' or \
+        #   self.P.sock.rig_type2 in ['IC9700'] or \
+        #   self.P.sock.rig_type2=='Dummy':
+        #    ALL_BANDS.append('2m')
+        #    ALL_BANDS.append('70cm')
+
+        print('ALL_BANDS=',ALL_BANDS)
         for b in ALL_BANDS:
-            print('b=',b)
+            print('\tb=',b)
             if b=='60m':
                 row+=1
                 col =1

@@ -21,17 +21,12 @@
 #
 ############################################################################
 
-if True:
-    # Dynamic importing - this works!
-    from widgets_qt import QTLIB
-elif False:
-    from PyQt6.QtWidgets import *
-elif False:
-    from PySide6.QtWidgets import *
-else:
-    from PyQt5.QtWidgets import *
-from rig_io.socket_io import *
-from rig_io.ft_tables import *
+from widgets_qt import QTLIB
+exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QLabel,QLineEdit,QPushButton')
+
+from collections import OrderedDict
+#from rig_io.socket_io import *
+#from rig_io.ft_tables import *
 import functools
 
 ################################################################################
