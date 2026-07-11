@@ -1,7 +1,7 @@
 ############################################################################
 #
 # Watch Dog - Rev 1.0
-# Copyright (C) 2021-5 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
+# Copyright (C) 2021-6 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
 #
 # Watch dog timer for pyRig
 #
@@ -19,21 +19,8 @@
 #
 ############################################################################
 
-if True:
-    # Dynamic importing - this works!
-    from widgets_qt import QTLIB
-    #exec('from '+QTLIB+'.QtWidgets import *')
-    exec('from '+QTLIB+'.QtCore import QTimer')
-elif False:
-    from PyQt6.QtWidgets import *
-    from PyQt6.QtCore import QTimer
-elif False:
-    from PySide6.QtWidgets import *
-    from PySide6.QtCore import QTimer
-else:
-    from PyQt5.QtWidgets import *
-    from PyQt5.QtCore import QTimer
-
+from widgets_qt import QTLIB
+exec('from '+QTLIB+'.QtCore import QTimer')
 import rig_io.socket_io as socket_io
     
 ################################################################################
@@ -58,6 +45,11 @@ class WatchDog:
         sock2=P.sock2
         if self.VERBOSITY>0 or True:
             print('Watch Dog ...')    # ,end=' ')
+
+        # Check if rig is available
+        ps = self.P.sock.power_switch(-1)
+        if ps!=1:
+            return
 
         # Read radio status
         #if P.sock.connection!='NONE':
@@ -88,7 +80,7 @@ class WatchDog:
                 #frq  = P.sock.get_freq(VFO='B')
                 #print('Split is on frq=',frq)
                 #frqB  = .001*frq
-                modeB = P.sock.get_mode(VFO='B')
+                modeB,bw = P.sock.get_mode(VFO='B')
                 #print('Split is on',frqB,modeB)
                 if self.VERBOSITY>0:
                     print('Split is on - mode B=',modeB)

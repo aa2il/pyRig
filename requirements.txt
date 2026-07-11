@@ -7,9 +7,9 @@
 #
 #     setenv PYTHONPATH $HOME/Python/libs
 
-#pyqt5
 #pyqt6
-PySide6              # This seems to work but there was a bug that causes gui
+pyqt6==6.7.1          # Need to specify this version on RPi
+#PySide6              # This seems to work but there was a bug that causes gui
                       # program to hang on final exit - HAS THIS BEEN ADDRESSED????!!!
 pyserial
 xlrd

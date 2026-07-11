@@ -1,7 +1,7 @@
 ############################################################################
 #
 # keypad.py - Rev 1.0
-# Copyright (C) 2021-5 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
+# Copyright (C) 2021-6 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
 #
 # Portion of Gui for programming Yaesu key pad.
 #
@@ -143,6 +143,7 @@ class KEY_PAD():
         
 
     def GetKeyerMemory(self):
+        
         s=self.P.sock
         Keyer = []
 
@@ -160,12 +161,15 @@ class KEY_PAD():
                 else:
                     cmd='EX025;'
 
-            ntries=0
-            while ntries<5:
-                ntries+=1
-                buf=s.get_response(cmd)
-                if len(buf)>0:
-                    break
+            if self.P.POWERED_UP:
+                ntries=0
+                while ntries<5:
+                    ntries+=1
+                    buf=s.get_response(cmd)
+                    if len(buf)>0:
+                        break
+            else:
+                buf='};'
             
             print("GetKeyerMemory: buf=",buf)
             if i<5:

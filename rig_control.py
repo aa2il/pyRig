@@ -1,7 +1,7 @@
 ############################################################################
 #
 # rig_control.py - Rev 1.0
-# Copyright (C) 2021-5 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
+# Copyright (C) 2021-6 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
 #
 # Portion of GUI related to rig controls
 #
@@ -283,8 +283,12 @@ class RIG_CONTROL():
         
     # Function to read rig status and update control buttons accordingly
     def rig_status(self):
-        print('RIG_STATUS: band=',self.sock.band)
+        ps=self.sock.power_switch(-1)
+        print('RIG_STATUS: ps=',ps)
+        if ps==0:
+            return
 
+        print('RIG_STATUS: band=',self.sock.band)
         if self.sock.band=='MW':
             self.band='160m'
         elif self.sock.band=='AIR':
@@ -294,7 +298,7 @@ class RIG_CONTROL():
         if self.band:
             self.band_buttons[self.band].setChecked(True)
 
-        self.mode = self.sock.get_mode()
+        self.mode,bw = self.sock.get_mode()
         print('RIG_STATUS: mode=',self.mode)
         if self.mode in ['PSK-U','PKT-U','PKTUSB','DATA-U']:
             self.mode='RTTY'

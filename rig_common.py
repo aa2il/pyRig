@@ -1,7 +1,7 @@
 ############################################################################
 #
 # rig_common.py - Rev 1.0
-# Copyright (C) 2021-5 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
+# Copyright (C) 2021-6 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
 #
 # Gui for controlling the most common rig functions
 #
@@ -21,24 +21,14 @@
 #
 ############################################################################
 
-if True:
-    # Dynamic importing - this works!
-    from widgets_qt import QTLIB
-    exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QComboBox,'+
-         'QPushButton,QProgressBar,QLineEdit,QButtonGroup')
-    exec('from '+QTLIB+'.QtCore import QTimer')
-elif False:
-    from PyQt6.QtWidgets import *
-    from PyQt6.QtCore import QTimer
-elif False:
-    from PySide6.QtWidgets import *
-    from PySide6.QtCore import QTimer
-else:
-    from PyQt5.QtCore import * 
-    from PyQt5.QtWidgets import *
+from widgets_qt import QTLIB
+exec('from '+QTLIB+'.QtWidgets import QWidget,QGridLayout,QComboBox,'+
+     'QPushButton,QProgressBar,QLineEdit,QButtonGroup')
+exec('from '+QTLIB+'.QtCore import QTimer')
 from rig_io.socket_io import *
 from widgets_qt import *
 import functools
+from time import sleep
 
 ################################################################################
 
@@ -49,9 +39,9 @@ VERBOSITY=0
 class RIG_COMMON():
     def __init__(self,parent,P):
         self.P=P
+        self.P.POWERED_UP = False
 
-        if True:
-            print('RIG_COMMN INIT:',P.sock.rig_type,P.sock.rig_type1,P.sock.rig_type2)
+        print('RIG_COMMN INIT:',P.sock.rig_type,P.sock.rig_type1,P.sock.rig_type2)
 
         self.tab1 = QWidget()
         parent.addTab(self.tab1,"Common")
@@ -65,10 +55,32 @@ class RIG_COMMON():
         self.lcd = MyLCDNumber(self.tab1,7,1,ival=.001*P.sock.freq,wheelCB=self.setRigFreq)
         self.lcd.setFixedSize(400, 80)
         self.grid.addWidget(self.lcd,row,col,2,4)
-        row+=2
+
+        # Add Power Switch
+        if self.P.sock.rig_type2 in ['FTdx3000','FT991a']:
+            col+=4
+            self.pwr_switch = QPushButton('Rig On/Off') 
+            self.pwr_switch.setToolTip('Switch Rig On/Off')
+            self.pwr_switch.clicked.connect(self.toggle_power_switch)
+            self.grid.addWidget(self.pwr_switch,row,col)
+            self.pwr_switch.setCheckable( True )
+
+            self.toggle_power_switch(iop=-1)
+            #ps = self.P.sock.power_switch(-1)
+            #self.pwr_switch.setChecked( ps )
+            #print('Rig power is ',ps,self.P.sock.rig_type)
+            #if ps and self.P.sock.rig_type=='Hamlib':
+                # For some reason, Hamlib needs this for things to work properly
+                #split = self.P.sock.split_mode(1)
+            col-=4
+        else:
+            self.pwr_switch=None
+        
 
         # Add band selector
-        if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
+        row+=2
+        col=0
+        if self.P.sock.rig_type2 in ['FTdx3000','FT991a']:
             #row+=1
             self.bands = []
             for b in bands.keys():
@@ -84,7 +96,7 @@ class RIG_COMMON():
             self.setRigBand(-1)
 
         # Add memory channel selector
-        if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
+        if self.P.sock.rig_type2 in ['FTdx3000','FT991a']:
             col+=2
             self.memchans = [str(x) for x in range(117)]
             #print('chans=',self.memchans)
@@ -96,7 +108,7 @@ class RIG_COMMON():
             self.grid.addWidget(self.memchan,row,col+1)
 
         # Add split on/off selector
-        if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
+        if self.P.sock.rig_type2 in ['FTdx3000','FT991a']:
             col+=2
             self.split = QPushButton('Split') 
             self.split.setToolTip('Split On/Off')
@@ -104,12 +116,13 @@ class RIG_COMMON():
             self.grid.addWidget(self.split,row,col)
             self.split.setCheckable( True )
 
-            split = self.P.sock.split_mode(-1)
-            self.split.setChecked( split )
-            print('Split is ',split,self.P.sock.rig_type)
-            if split and self.P.sock.rig_type=='Hamlib':
-                # For some reason, Hamlib needs this for things to work properly
-                split = self.P.sock.split_mode(1)
+            if self.P.POWERED_UP:
+                split = self.P.sock.split_mode(-1)
+                self.split.setChecked( split )
+                print('Split is ',split,self.P.sock.rig_type)
+                if split and self.P.sock.rig_type=='Hamlib':
+                    # For some reason, Hamlib needs this for things to work properly
+                    split = self.P.sock.split_mode(1)
         else:
             self.split=None
                 
@@ -124,7 +137,8 @@ class RIG_COMMON():
         self.mode.addItems(self.modes)
         self.mode.currentIndexChanged.connect(self.setRigMode)
         self.grid.addWidget(self.mode,row,col+1)
-        self.setRigMode(-1)
+        if self.P.POWERED_UP:
+            self.setRigMode(-1)
 
         # Ant Tuner buttons
         col+=2
@@ -133,13 +147,13 @@ class RIG_COMMON():
         self.tuner_btn1.clicked.connect(self.toggle_tuner)
         self.grid.addWidget(self.tuner_btn1,row,col)
         self.tuner_btn1.setCheckable( True )
-        print( self.P.sock.tuner(-1) )
-        if self.P.sock.tuner(-1):
-            print('Tuner is on')
-            self.tuner_btn1.setChecked( True )
-        else:
-            print('Tuner is off')
-            self.tuner_btn1.setChecked( False )
+        if self.P.POWERED_UP:
+            if self.P.sock.tuner(-1):
+                print('Tuner is on')
+                self.tuner_btn1.setChecked( True )
+            else:
+                print('Tuner is off')
+                self.tuner_btn1.setChecked( False )
 
         col+=1
         self.tuner_btn2 = QPushButton('Tune') 
@@ -161,7 +175,8 @@ class RIG_COMMON():
         self.change_filters()
         self.filt1.currentIndexChanged.connect( functools.partial( self.setRigFilter,1 ) )
         self.filt2.currentIndexChanged.connect( functools.partial( self.setRigFilter,2 ) )
-        self.setRigFilter(-1)
+        if self.P.POWERED_UP:
+            self.setRigFilter(-1)
         
         # Add S-meter
         if self.P.sock.rig_type=='Kenwood':
@@ -179,7 +194,7 @@ class RIG_COMMON():
         self.grid.addWidget(self.smeter_txt,row,col+4)
 
         # Add Power meter
-        if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
+        if self.P.sock.rig_type2 in ['FTdx3000','FT991a']:
             row+=1
             lb=QLabel("Power:")
             self.grid.addWidget(lb,row,col)
@@ -240,7 +255,7 @@ class RIG_COMMON():
         # Buttons to select audio port
         row+=1
         col=0
-        if self.P.sock.rig_type2=='FTdx3000' or self.P.sock.rig_type2=='FT991a':
+        if self.P.sock.rig_type2 in ['FTdx3000','FT991a']:
             self.btn_group=QButtonGroup() 
             self.btns={}
             for src in ['Front','Rear']:
@@ -279,9 +294,12 @@ class RIG_COMMON():
             self.filters2 = TS850_FILTERS
         else:
             self.filters1 = ['Wide','Narrow']
-            
-            m=self.P.sock.mode
-            wide=self.P.sock.filt[0]
+
+            if self.P.POWERED_UP:
+                m=self.P.sock.mode
+                wide=self.P.sock.filt[0]
+            else:
+                return
             if m in ['PKTUSB','RTTY','PSK-U','DATA-U']:
                 if wide=='Wide':
                     filts=FT991A_DATA_FILTERS2
@@ -336,6 +354,60 @@ class RIG_COMMON():
         #self.filt1.setEnabled(True)
         #self.filt2.setEnabled(True)
             
+    # Callback to toggle Rig Power Switch
+    def toggle_power_switch(self,iop=0):
+        print('Toggle power switch: iop=',iop)
+
+        if iop!=-1:
+            ps = self.P.sock.power_switch(-1)
+            print('Toggle power switch: ps=',ps)
+            if ps==None:
+                print('Rig appears to be OFF with NO POWER')
+                self.P.POWERED_UP = False
+            elif ps:
+                print('Rig is powered up - turning OFF')
+                self.P.sock.power_switch(0)
+                self.P.POWERED_UP = False
+            else:
+                print('Rig is powered down - turning ON')
+                self.P.sock.power_switch(1)
+                self.P.POWERED_UP = True
+            sleep(1)
+            
+        ps = self.P.sock.power_switch(-1)
+        self.pwr_switch.setChecked( ps )
+        
+        if ps==None:
+            self.pwr_switch.setStyleSheet('QPushButton { \
+            background-color: yello; \
+            border :1px inset ; \
+            border-radius: 5px; \
+            border-color: gray; \
+            font: bold 14px; \
+            padding: 4px; \
+            }')
+            self.pwr_switch.setText('No Power to Rig')
+        elif ps:
+            self.pwr_switch.setStyleSheet('QPushButton { \
+            background-color: red; \
+            border :1px inset ; \
+            border-radius: 5px; \
+            border-color: gray; \
+            font: bold 14px; \
+            padding: 4px; \
+            }')
+            self.pwr_switch.setText('Turn Rig OFF')
+        else:
+            self.pwr_switch.setStyleSheet('QPushButton { \
+            background-color: limegreen; \
+            border :1px outset ; \
+            border-radius: 5px; \
+            border-color: gray; \
+            font: bold 14px; \
+            padding: 4px; \
+            }')
+            self.pwr_switch.setText('Turn Rig ON')
+        
     # Callback to toggle split mode
     def toggle_split(self):
         splt = self.P.sock.split_mode(-1)
@@ -367,6 +439,8 @@ class RIG_COMMON():
     def front_rear(self):
         #b = self.clicked(self.btns)
         b = self.btn_group.sender()
+        if not self.P.POWERED_UP:
+            return
         print('btn=',b.text())
         if b.isChecked():
             print( b.text()+" is checked" )
@@ -397,8 +471,9 @@ class RIG_COMMON():
         if idx==-1:
             # Set combo box from rig mode
             print('band=',self.P.sock.band)
-            idx=self.bands.index(self.P.sock.band)
-            self.band.setCurrentIndex(idx)
+            if self.P.POWERED_UP:
+                idx=self.bands.index(self.P.sock.band)
+                self.band.setCurrentIndex(idx)
         else:
             # Set rig from combo box selection
             if self.P.sock.band!=self.bands[idx]:
@@ -415,7 +490,7 @@ class RIG_COMMON():
             elif mode1 in ['SSB']:
                 mode='USB'
             elif mode1 in ['RTTY','PSK-U','DATA-U']:
-                mode1='PKTUSB'
+                mode='PKTUSB'
             elif mode1 in ['AMN']:
                 mode='AM'
             elif mode1 in ['FMN']:
@@ -484,11 +559,9 @@ class RIG_COMMON():
             if filt != self.P.sock.filt[ifilt-1]:
                 new_filts = self.P.sock.filt.copy()
                 new_filts[ifilt-1] = filt
-                try:
+                if self.P.POWERED_UP:
                     if not self.P.sock.set_filter(new_filts):
                         self.setRigFilter(-1)
-                except:
-                    pass
                 
         if VERBOSITY>0:
             print('setRigFilter: Done\n')
@@ -572,11 +645,14 @@ class RIG_VFOS():
 
         print('\nRIG_VFOS: SET_VFO_MODE Spinner callback - vfo=',vfo,
               '\topt=',iopt,'\tmode=',mode)
+
+        if not self.P.POWERED_UP:
+            return
         
         if iopt==-1 or mode==None:
             
             # Set spin box according to rig
-            mode = self.P.sock.get_mode(VFO=vfo,VERBOSITY=1)
+            mode,bw = self.P.sock.get_mode(VFO=vfo,VERBOSITY=1)
             if mode in ['RTTY','DATA-U','PSK-U']:
                 mode='PKTUSB'
             print('\tmode=',mode)

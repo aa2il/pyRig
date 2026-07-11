@@ -4,7 +4,7 @@
 ############################################################################
 #
 # pyRig.py - Rev 1.0
-# Copyright (C) 2021-5 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
+# Copyright (C) 2021-6 by Joseph B. Attili, joe DOT aa2il AT gmail DOT com
 #
 # Gui for remote rig & rotor control.  This is rather primative right now.
 # Flrig is much better but I mainly want a rotor controller.  Need to spend
@@ -178,7 +178,7 @@ if __name__ == '__main__':
     # Create application and gui
     print('\n=============== Creating App ....')
     P.app     = QApplication(sys.argv)
-    print('\n=============== Creating Mintor ....')
+    print('\n=============== Creating Monitor ....')
     P.monitor = WatchDog(P,2000)
     print('\n=============== Creating Gui ....')
     P.gui     = pyRIG_GUI(P)
